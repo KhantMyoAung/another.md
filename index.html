@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Codex of Minds — an RPG of scientists and what they actually did</title>
+<meta name="description" content="A 3D, RPG-styled codex of five scientists — Leonardo da Vinci, Richard Feynman, Ibn al-Haytham, Emmy Noether and Chien-Shiung Wu — with their real, sourced contributions as a quest tree.">
+<meta name="theme-color" content="#08161c">
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b1c22'/%3E%3Cpath d='M16 5l9 5.5v11L16 27l-9-5.5v-11z' fill='none' stroke='%23e0a341' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='3.4' fill='%234fd1c5'/%3E%3C/svg%3E">
+</head>
+<body>
+
+<canvas id="stage" aria-hidden="true"></canvas>
+
+<!-- ── boot ─────────────────────────────────────────────────────────── -->
+<section id="boot" class="screen">
+  <div class="boot-inner">
+    <p class="boot-kicker">Five minds · one hall</p>
+    <h1 class="boot-title"><span>Codex</span><em>of</em><span>Minds</span></h1>
+    <p class="boot-sub">
+      An interactive hall of scientists, built like a character-select screen.
+      Every quest node is a real, sourced contribution — not flavour text.
+    </p>
+    <button id="start" class="btn big">
+      <span class="btn-glow"></span>Enter the Hall
+    </button>
+    <p class="boot-hint">Drag or use <kbd>←</kbd> <kbd>→</kbd> to turn the ring · <kbd>Enter</kbd> to open a codex</p>
+  </div>
+  <div class="boot-scan" aria-hidden="true"></div>
+</section>
+
+<!-- ── hall overlay ─────────────────────────────────────────────────── -->
+<section id="hall" class="screen" hidden>
+  <header class="hall-top">
+    <p class="brand">Codex&nbsp;of&nbsp;Minds</p>
+    <p class="completion" data-completion></p>
+  </header>
+
+  <button class="arrow left" data-nav="-1" aria-label="Previous">‹</button>
+  <button class="arrow right" data-nav="1" aria-label="Next">›</button>
+
+  <div class="hall-bottom">
+    <div class="nameplate">
+      <span class="rarity" data-rar></span>
+      <h2 data-name></h2>
+      <p class="np-title" data-title></p>
+      <p class="np-life" data-life></p>
+      <p class="np-tag" data-tag></p>
+      <button class="btn" data-open>Open Codex <kbd>↵</kbd></button>
+    </div>
+    <nav class="dots" data-dots aria-label="Choose a scientist"></nav>
+  </div>
+</section>
+
+<!-- ── character sheet ──────────────────────────────────────────────── -->
+<main id="sheet" class="sheet" hidden></main>
+
+<!-- ── persistent controls ──────────────────────────────────────────── -->
+<div class="hud" hidden>
+  <button id="mute" class="icon-btn" aria-pressed="false" title="Sound">
+    <span class="on">♪</span><span class="off">✕</span>
+  </button>
+  <button id="about-btn" class="icon-btn" title="About this build">?</button>
+</div>
+
+<dialog id="about">
+  <h3>About this build</h3>
+  <p>
+    Five scientists: two you have heard of and three who are routinely left out of the story.
+    Each quest node is a documented contribution with a date, and each character sheet ends
+    with the sources it was written from.
+  </p>
+  <p>
+    The portraits are not photographs and not AI generations — they are drawn in code from a
+    single shared rig, so the five read as one set. Nobody knows what Ibn al-Haytham looked
+    like; that one is an acknowledged invention.
+  </p>
+  <p>
+    The stat lines are an editorial flourish. Everything else is meant to survive checking.
+  </p>
+  <p class="tech">Three.js · generated SVG · Web Audio · no external requests.</p>
+  <button class="btn" data-close>Close</button>
+</dialog>
+
+<noscript>
+  <div class="noscript">This codex is an interactive 3D scene and needs JavaScript enabled.</div>
+</noscript>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
