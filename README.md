@@ -60,12 +60,18 @@ python3 -m http.server 8000
 
 ## Deploying
 
-**GitHub Pages** — `.github/workflows/pages.yml` publishes the repo root on
-every push to `main`. If this is the first deploy, either let the workflow
-enable Pages itself or set *Settings → Pages → Source* to **GitHub Actions**.
+**Vercel** (how this is hosted) — import the repo at
+[vercel.com/new](https://vercel.com/new/import?s=https://github.com/KhantMyoAung/another.md).
+`vercel.json` declares no build command and the repo root as the output
+directory, so there is nothing to install and nothing to configure. Every push
+to `main` redeploys.
 
-**Vercel** — import the repo. `vercel.json` declares no build command and the
-repo root as the output directory; there is nothing to install.
+**GitHub Pages** (alternative, manual) — `.github/workflows/pages.yml` is
+`workflow_dispatch` only. Before the first run, Pages has to be switched on by
+hand at *Settings → Pages → Source → **GitHub Actions***. The workflow cannot
+do this for you: creating a Pages site requires `administration: write`, which
+the workflow's `GITHUB_TOKEN` does not carry, so `configure-pages` fails with
+`Resource not accessible by integration`.
 
 ## Layout
 
