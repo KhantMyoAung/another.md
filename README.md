@@ -14,6 +14,17 @@ quest tree of their real, dated, sourced contributions.
 | 04 | Emmy Noether (1882–1935) | Mathematician | Explained *why* conservation laws exist, then rebuilt algebra — while barred from holding a post |
 | 05 | Chien-Shiung Wu (1912–1997) | Experimentalist | Proved the universe distinguishes left from right. The Nobel went to the two men who suggested the experiment |
 
+**Wing II — The Pop Lab** (`lab.html`), five more, comic-book styled and locked
+behind experiments you have to run yourself:
+
+| № | Who | The experiment | What it left you |
+|---|-----|----------------|------------------|
+| 06 | Émilie du Châtelet (1706–1749) | Drop brass balls into clay — dents go 1, 4, 9 | Energy goes as v², which is why a 60 mph crash is four times a 30 mph one |
+| 07 | Hedy Lamarr (1914–2000) | Outrun a jammer across 88 channels | Frequency hopping — and the myth that she invented Wi-Fi, corrected |
+| 08 | Stephanie Kwolek (1923–2014) | Mix two monomers; most pairs detonate | Kevlar, from a cloudy batch everyone else would have binned |
+| 09 | John Snow (1813–1858) | Survey the houses, then pull the pump handle | Epidemiology, chlorinated water, contact tracing |
+| 10 | Tu Youyou (b. 1930) | Pick a solvent, set a temperature, don't cook it | Artemisinin — the front-line malaria drug |
+
 ## What's in it
 
 - **A 3D hall** — five shrines on a ring around a turning core, on a shader
