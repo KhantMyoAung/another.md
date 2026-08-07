@@ -15,6 +15,7 @@
 
 import { SCIENTISTS } from './data.js';
 import { LAB } from './lab-data.js';
+import { LAB_QUESTS } from './lab-quests.js';
 
 const INK = { red: '#e6242a', blue: '#0b63d6', yellow: '#ffd400' };
 const INK2 = { red: '#ffd400', blue: '#ffd400', yellow: '#e6242a' };
@@ -63,11 +64,6 @@ const fromWingII = (s) => ({
   tagline: s.hook,
   intro: s.beats[0]?.body || '',
   underrated: null,
-  quote: null,
-  stats: null,
-  statNote: null,
-  quests: null,
-  artifacts: null,
   sources: s.sources,
   wing: 2,
   /* the experiment */
@@ -76,7 +72,10 @@ const fromWingII = (s) => ({
   gameBrief: s.gameBrief,
   gameHint: s.gameHint,
   beats: s.beats,
-  today: s.today
+  today: s.today,
+  /* Wing II entries gain quests, stats, quote and artifacts as parity lands.
+     Anything still missing stays undefined and its section is not rendered. */
+  ...(LAB_QUESTS[s.id] || {})
 });
 
 export const ROSTER = [

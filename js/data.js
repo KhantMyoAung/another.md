@@ -24,7 +24,8 @@ export const QUEST_KINDS = {
   discovery: { label: 'Discovery', glyph: '✦' },
   artifact: { label: 'Artifact', glyph: '▣' },
   legacy: { label: 'Legacy', glyph: '❖' },
-  trial: { label: 'Trial', glyph: '⚔' }
+  trial: { label: 'Trial', glyph: '⚔' },
+  craft: { label: 'Craft', glyph: '✥' }
 };
 
 export const SCIENTISTS = [
