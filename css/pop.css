@@ -335,3 +335,54 @@ input[type=range].pop-range::-moz-range-thumb {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
   .beat { opacity: 1; transform: none; }
 }
+
+/* ── mobile ──────────────────────────────────────────────────────────── */
+
+@media (max-width: 720px) {
+  body.pop { font-size: 14px; padding-bottom: 60px; }
+  .wrap { padding: 0 14px; }
+  .hero { padding: 26px 0 12px; }
+  .lede { font-size: 13.5px; }
+
+  .box { padding: 16px; border-width: 4px; box-shadow: 6px 6px 0 var(--ink); }
+  .stage { box-shadow: 6px 6px 0 var(--ink); border-width: 4px; }
+  .stage-body { padding: 14px; }
+  .stage-bar { padding: 10px 12px; gap: 8px; }
+  .stage-brief { font-size: 11.5px; min-width: 0; flex-basis: 100%; }
+  .card { margin-top: 38px; }
+  .card-head { gap: 12px; margin-bottom: 12px; }
+  .card-hook { font-size: 15px; }
+  .card.open .beats { padding: 18px; box-shadow: 6px 6px 0 var(--ink); }
+  .beat { padding-left: 14px; border-left-width: 6px; margin-bottom: 20px; }
+  .beat h4 { font-size: 21px; }
+  .today { padding: 16px 18px; box-shadow: 6px 6px 0 var(--ink); }
+  .balloon { font-size: 19px; padding: 14px 16px; max-width: none; }
+  .burst { width: 118px; height: 118px; font-size: 23px; }
+
+  /* Touch targets: nothing interactive drops below ~44px. */
+  .pop-btn { font-size: 19px; padding: 11px 22px; min-height: 46px; }
+  .pop-btn.sm { font-size: 16px; padding: 9px 16px; min-height: 44px; }
+  .chip { font-size: 11px; padding: 10px 14px; min-height: 42px; }
+  .flask { padding: 12px 6px; min-height: 92px; }
+  .flask .vial { height: 34px; }
+  .flask .nm { font-size: 9px; }
+  .flasks { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .keys { height: 76px; gap: 2px; }
+  .key { min-width: 0; }
+  input[type=range].pop-range { width: 100%; height: 26px; }
+  input[type=range].pop-range::-webkit-slider-thumb { width: 34px; height: 34px; }
+  input[type=range].pop-range::-moz-range-thumb { width: 30px; height: 30px; }
+  .ctrl-row { gap: 8px; }
+  .dial-wrap { gap: 8px; }
+
+  .lab-top { padding-top: 14px; gap: 10px; }
+  .backlink { font-size: 17px; padding: 8px 14px; }
+  .progress-chip { font-size: 10px; padding: 8px 12px; }
+  .srcs ol { padding-left: 16px; font-size: 11.5px; }
+}
+
+@media (max-width: 420px) {
+  .flasks { grid-template-columns: repeat(2, 1fr); }
+  .keys { height: 64px; }
+  .card-no { font-size: 30px; }
+}

@@ -76,10 +76,11 @@ export const RIGS = {
     brow: { w: 26, t: 8, inner: 3, outer: -3 },
     nose: { w: 15, len: 50 },
     mouth: 'line',
-    skin: { base: '#e3b98f', shade: '#a97c58', light: '#f6dcbb' },
-    hair: { base: '#bcb3a4', shade: '#79736a', light: '#e9e2d4' },
-    cloth: { base: '#5d2f27', shade: '#3a1c17', trim: '#b98a4a' },
-    rim: '#ffd98a',
+    skin: { base: '#f2c79a', shade: '#e0a341', light: '#ffffff' },
+    hair: { base: '#ffffff', shade: '#111111', light: '#ffffff' },
+    cloth: { base: '#e6242a', shade: '#111111', trim: '#ffd400' },
+    hatInk: '#0b63d6',
+    rim: '#ffd400',
     hairBack: `M 210 74 C 132 74 104 132 104 194
       C 104 244 96 292 88 340 C 100 326 112 320 124 314
       C 120 322 118 332 116 344 C 130 330 142 322 152 316
@@ -107,10 +108,10 @@ export const RIGS = {
     brow: { w: 27, t: 9, inner: 2, outer: -6 },
     nose: { w: 14, len: 46 },
     mouth: 'grin',
-    skin: { base: '#e8bd95', shade: '#ab7c58', light: '#fadfbe' },
-    hair: { base: '#3b3229', shade: '#241d17', light: '#6d6055' },
-    cloth: { base: '#eae6da', shade: '#bdb7a7', trim: '#2c3742' },
-    rim: '#9fdcff',
+    skin: { base: '#f2c79a', shade: '#e0a341', light: '#ffffff' },
+    hair: { base: '#241d17', shade: '#111111', light: '#ffffff' },
+    cloth: { base: '#ffffff', shade: '#111111', trim: '#0b63d6' },
+    rim: '#0b63d6',
     hairBack: `M 210 70 C 140 70 106 120 106 184 C 106 212 112 236 118 250
       C 112 206 118 162 138 138 C 168 106 252 106 282 138
       C 302 162 308 206 302 250 C 308 236 314 212 314 184 C 314 120 280 70 210 70 Z`,
@@ -130,10 +131,10 @@ export const RIGS = {
     brow: { w: 28, t: 9, inner: 2, outer: -4 },
     nose: { w: 15, len: 50 },
     mouth: 'line',
-    skin: { base: '#c9955f', shade: '#8d6135', light: '#e8bd88' },
-    hair: { base: '#2e2621', shade: '#181310', light: '#584a3f' },
-    cloth: { base: '#2b3670', shade: '#171e44', trim: '#d5ab5a' },
-    rim: '#b6c2ff',
+    skin: { base: '#c9955f', shade: '#8d6135', light: '#ffffff' },
+    hair: { base: '#181310', shade: '#111111', light: '#ffffff' },
+    cloth: { base: '#0b63d6', shade: '#111111', trim: '#ffd400' },
+    rim: '#ffd400',
     /* turban: a tall wrapped dome plus a band across the brow */
     headwear: `M 92 156 C 86 76 140 34 210 34 C 280 34 334 76 328 156
       C 296 128 256 116 210 116 C 164 116 124 128 92 156 Z`,
@@ -159,10 +160,10 @@ export const RIGS = {
     brow: { w: 24, t: 7, inner: 2, outer: -3 },
     nose: { w: 13, len: 44 },
     mouth: 'smile',
-    skin: { base: '#eec3a1', shade: '#b1846a', light: '#fbe2ca' },
-    hair: { base: '#3a2f2a', shade: '#221a17', light: '#6b574d' },
-    cloth: { base: '#2f2a3d', shade: '#1a1724', trim: '#efe9df' },
-    rim: '#e3c8ff',
+    skin: { base: '#f6d2b4', shade: '#e0a341', light: '#ffffff' },
+    hair: { base: '#241a17', shade: '#111111', light: '#ffffff' },
+    cloth: { base: '#e6242a', shade: '#111111', trim: '#ffd400' },
+    rim: '#ffd400',
     hairBack: `M 210 68 C 140 68 106 116 106 180 C 106 218 114 248 122 266
       C 114 224 116 186 128 160 C 150 112 270 112 292 160
       C 304 186 306 224 298 266 C 306 248 314 218 314 180 C 314 116 280 68 210 68 Z`,
@@ -184,10 +185,10 @@ export const RIGS = {
     brow: { w: 25, t: 6, inner: 1, outer: -4 },
     nose: { w: 12, len: 42 },
     mouth: 'line',
-    skin: { base: '#f0c6a2', shade: '#b98a68', light: '#fde4cb' },
-    hair: { base: '#221c1a', shade: '#0f0c0b', light: '#4d403a' },
-    cloth: { base: '#f2efe6', shade: '#c3bfb2', trim: '#1c6b64' },
-    rim: '#a8f5ec',
+    skin: { base: '#f6d2b4', shade: '#e0a341', light: '#ffffff' },
+    hair: { base: '#0f0c0b', shade: '#111111', light: '#ffffff' },
+    cloth: { base: '#0b63d6', shade: '#111111', trim: '#ffd400' },
+    rim: '#ffd400',
     bun: { cx: 300, cy: 246, rx: 30, ry: 26 },
     hairBack: `M 210 66 C 138 66 106 118 106 184 C 106 224 116 258 124 278
       C 116 236 118 190 128 162 C 150 110 270 110 292 162
@@ -306,20 +307,26 @@ export function buildPortrait(id, accent, opts = {}) {
   if (r.extras === 'tie') {
     garment = `
       <path d="M 196 372 L 210 386 L 224 372 L 234 380 L 216 402 L 226 470 L 210 486 L 194 470 L 204 402 L 186 380 Z"
-            fill="${cloth.trim}"/>
-      <path d="M 176 366 C 168 396 150 428 132 452 L 158 470 C 176 436 184 400 186 372 Z" fill="${cloth.shade}" opacity=".55"/>
-      <path d="M 244 366 C 252 396 270 428 288 452 L 262 470 C 244 436 236 400 234 372 Z" fill="${cloth.shade}" opacity=".55"/>`;
+            fill="${cloth.trim}" stroke="#111111" stroke-width="5" stroke-linejoin="round"/>
+      <path d="M 176 366 C 168 396 150 428 132 452 L 158 470 C 176 436 184 400 186 372 Z"
+            fill="none" stroke="#111111" stroke-width="5" stroke-linejoin="round"/>
+      <path d="M 244 366 C 252 396 270 428 288 452 L 262 470 C 244 436 236 400 234 372 Z"
+            fill="none" stroke="#111111" stroke-width="5" stroke-linejoin="round"/>`;
   } else if (r.extras === 'trim') {
     garment = `
       <path d="M 172 372 C 168 430 178 500 186 560 L 234 560 C 242 500 252 430 248 372
-               C 240 406 226 424 210 424 C 194 424 180 406 172 372 Z" fill="${cloth.trim}" opacity=".85"/>
+               C 240 406 226 424 210 424 C 194 424 180 406 172 372 Z"
+            fill="${cloth.trim}" stroke="#111111" stroke-width="5" stroke-linejoin="round"/>
       <path d="M 186 400 q 24 10 48 0 M 184 440 q 26 10 52 0 M 182 480 q 28 10 56 0"
             fill="none" stroke="${cloth.shade}" stroke-width="2.4" opacity=".6"/>`;
   } else if (r.extras === 'labcoat') {
     garment = `
-      <path d="M 210 404 C 196 448 190 500 188 560 L 232 560 C 230 500 224 448 210 404 Z" fill="${cloth.trim}"/>
-      <path d="M 176 366 C 172 400 176 430 186 448 L 210 404 Z" fill="${cloth.shade}" opacity=".5"/>
-      <path d="M 244 366 C 248 400 244 430 234 448 L 210 404 Z" fill="${cloth.shade}" opacity=".5"/>
+      <path d="M 210 404 C 196 448 190 500 188 560 L 232 560 C 230 500 224 448 210 404 Z"
+            fill="${cloth.trim}" stroke="#111111" stroke-width="5" stroke-linejoin="round"/>
+      <path d="M 176 366 C 172 400 176 430 186 448 L 210 404 Z"
+            fill="none" stroke="#111111" stroke-width="5" stroke-linejoin="round"/>
+      <path d="M 244 366 C 248 400 244 430 234 448 L 210 404 Z"
+            fill="none" stroke="#111111" stroke-width="5" stroke-linejoin="round"/>
       <path d="M 210 404 L 210 560" stroke="${cloth.shade}" stroke-width="2.5" opacity=".55" fill="none"/>`;
   }
 
@@ -328,42 +335,35 @@ export function buildPortrait(id, accent, opts = {}) {
      role="img" aria-label="Stylised portrait" preserveAspectRatio="xMidYMid meet">
   <defs>
     <radialGradient id="${n}-aura" cx="50%" cy="42%" r="62%">
-      <stop offset="0%" stop-color="${accent}" stop-opacity=".40"/>
-      <stop offset="55%" stop-color="${accent}" stop-opacity=".10"/>
+      <stop offset="0%" stop-color="${accent}" stop-opacity=".55"/>
       <stop offset="100%" stop-color="${accent}" stop-opacity="0"/>
     </radialGradient>
-    <linearGradient id="${n}-skin" x1="0" y1="0" x2="1" y2="0.5">
-      <stop offset="0%" stop-color="${skin.light}"/>
-      <stop offset="46%" stop-color="${skin.base}"/>
-      <stop offset="100%" stop-color="${skin.shade}"/>
-    </linearGradient>
-    <linearGradient id="${n}-hair" x1="0" y1="0" x2="1" y2="0.7">
-      <stop offset="0%" stop-color="${hair.light}"/>
-      <stop offset="45%" stop-color="${hair.base}"/>
-      <stop offset="100%" stop-color="${hair.shade}"/>
-    </linearGradient>
-    <linearGradient id="${n}-cloth" x1="0.1" y1="0" x2="0.9" y2="0.6">
-      <stop offset="0%" stop-color="${cloth.base}"/>
-      <stop offset="100%" stop-color="${cloth.shade}"/>
-    </linearGradient>
+    <pattern id="${n}-ben" width="9" height="9" patternUnits="userSpaceOnUse">
+      <circle cx="4.5" cy="4.5" r="2.1" fill="${skin.shade}"/>
+    </pattern>
+    <pattern id="${n}-benc" width="9" height="9" patternUnits="userSpaceOnUse">
+      <circle cx="4.5" cy="4.5" r="2.1" fill="${cloth.shade}"/>
+    </pattern>
     <clipPath id="${n}-hc"><path d="${head}"/></clipPath>
+    <clipPath id="${n}-tc"><path d="${TORSO}"/></clipPath>
   </defs>
 
-  ${bg ? `<rect width="420" height="560" fill="#0b1c22"/>
+  ${bg ? `<rect width="420" height="560" fill="#fff9e6"/>
   <ellipse cx="210" cy="250" rx="240" ry="250" fill="url(#${n}-aura)"/>` : ''}
   <g class="p-glyphs">${glyphs}</g>
 
   <g class="p-body">
     <!-- Backlight: the same silhouette, offset up-and-right and drawn behind,
          so only a rim of it survives. Cheaper and cleaner than a stroke. -->
-    <path d="${TORSO}" fill="${r.rim}" opacity=".5" transform="translate(8 -5)"/>
-    <path d="${TORSO}" fill="url(#${n}-cloth)"/>
-    ${r.collar ? `<path d="${r.collar}" fill="${cloth.trim}" opacity=".9"/>` : ''}
+    <path d="${TORSO}" fill="${r.rim}" transform="translate(9 -6)"/>
+    <path d="${TORSO}" fill="${cloth.base}" stroke="#111111" stroke-width="7" stroke-linejoin="round"/>
+    <path d="${TORSO}" fill="url(#${n}-benc)" opacity=".55" clip-path="url(#${n}-tc)"/>
+    ${r.collar ? `<path d="${r.collar}" fill="${cloth.trim}" stroke="#111111" stroke-width="5"/>` : ''}
     ${garment}
   </g>
 
   <g class="p-head">
-    <g class="p-rim" fill="${r.rim}" opacity=".62" transform="translate(9 -7)">
+    <g class="p-rim" fill="${r.rim}" transform="translate(10 -8)">
       ${r.hairBack ? `<path d="${r.hairBack}"/>` : ''}
       <path d="${head}"/>
       ${r.beard ? `<path d="${r.beard}"/>` : ''}
@@ -372,30 +372,30 @@ export function buildPortrait(id, accent, opts = {}) {
       ${r.bun ? `<ellipse cx="${r.bun.cx}" cy="${r.bun.cy}" rx="${r.bun.rx}" ry="${r.bun.ry}"
           transform="rotate(-18 ${r.bun.cx} ${r.bun.cy})"/>` : ''}
     </g>
-    ${r.hairBack ? `<path class="p-hairback" d="${r.hairBack}" fill="url(#${n}-hair)"/>` : ''}
+    ${r.hairBack ? `<path class="p-hairback" d="${r.hairBack}" fill="${hair.base}" stroke="#111111" stroke-width="6" stroke-linejoin="round"/>` : ''}
     ${r.bun ? `<ellipse cx="${r.bun.cx}" cy="${r.bun.cy}" rx="${r.bun.rx}" ry="${r.bun.ry}"
-        fill="url(#${n}-hair)" transform="rotate(-18 ${r.bun.cx} ${r.bun.cy})"/>` : ''}
+        fill="${hair.base}" stroke="#111111" stroke-width="6" stroke-linejoin="round" transform="rotate(-18 ${r.bun.cx} ${r.bun.cy})"/>` : ''}
 
-    <path d="${NECK}" fill="${skin.shade}"/>
+    <path d="${NECK}" fill="${skin.shade}" stroke="#111111" stroke-width="6"/>
     <path d="M ${CX - 30} ${R.neckTop - 20} q 30 26 60 0 l 0 26 q -30 20 -60 0 Z" fill="#000" opacity=".22"/>
 
-    <path d="${head}" fill="url(#${n}-skin)"/>
+    <path d="${head}" fill="${skin.base}" stroke="#111111" stroke-width="7" stroke-linejoin="round"/>
     <g clip-path="url(#${n}-hc)">
-      <path d="M ${CX + 6} 60 C ${CX + 46} 150 ${CX + 40} 260 ${CX + 2} 340 L 420 340 L 420 60 Z"
-            fill="${skin.shade}" opacity=".34"/>
-      <ellipse cx="${CX - 44}" cy="${R.eyeY - 46}" rx="46" ry="34" fill="${skin.light}" opacity=".30"/>
-      <ellipse cx="${CX - 52}" cy="${R.cheek - 4}" rx="26" ry="18" fill="#c96b52" opacity=".10"/>
-      <ellipse cx="${CX + 52}" cy="${R.cheek - 4}" rx="26" ry="18" fill="#c96b52" opacity=".07"/>
+      <!-- one flat ink is tinted by printing dots over it, never by a lighter ink -->
+      <path d="M ${CX + 8} 40 C ${CX + 50} 150 ${CX + 44} 260 ${CX + 4} 360 L 430 360 L 430 40 Z"
+            fill="url(#${n}-ben)" opacity=".85"/>
+      <ellipse cx="${CX - 54}" cy="${R.cheek - 6}" rx="24" ry="15" fill="#e6242a" opacity=".28"/>
+      <ellipse cx="${CX + 54}" cy="${R.cheek - 6}" rx="24" ry="15" fill="#e6242a" opacity=".18"/>
     </g>
 
     <!-- ears -->
     <path d="M ${CX - f.cranium + 2} ${R.eyeY - 6} c -14 -4 -18 12 -12 26 c 5 12 12 16 16 12"
-          fill="${skin.base}" stroke="${skin.shade}" stroke-width="2"/>
+          fill="${skin.base}" stroke="#111111" stroke-width="5"/>
     <path d="M ${CX + f.cranium - 2} ${R.eyeY - 6} c 14 -4 18 12 12 26 c -5 12 -12 16 -16 12"
-          fill="${skin.shade}" stroke="${skin.shade}" stroke-width="2"/>
+          fill="${skin.shade}" stroke="#111111" stroke-width="5"/>
 
     <!-- brows -->
-    <g fill="${hair.shade}">
+    <g fill="#111111">
       <path d="${browPath(eyeL, R.browY, r.brow.w, r.brow.t, -1, r.brow.inner, r.brow.outer)}"/>
       <path d="${browPath(eyeR, R.browY, r.brow.w, r.brow.t, 1, r.brow.inner, r.brow.outer)}"/>
     </g>
@@ -411,11 +411,11 @@ export function buildPortrait(id, accent, opts = {}) {
             <circle cx="${ex}" cy="${R.eyeY + 1}" r="3.4" fill="#120d0a"/>
             <circle cx="${ex - 2.6}" cy="${R.eyeY - 2.4}" r="2.2" fill="#fff" opacity=".9"/>
           </g>
-          <path d="${eyePath(ex, R.eyeY, r.eye.w, r.eye.h)}" fill="none" stroke="${hair.shade}"
-                stroke-width="2.6" stroke-linejoin="round"/>
+          <path d="${eyePath(ex, R.eyeY, r.eye.w, r.eye.h)}" fill="none" stroke="#111111"
+                stroke-width="3.4" stroke-linejoin="round"/>
           <path d="M ${ex - r.eye.w} ${R.eyeY} C ${ex - r.eye.w * 0.5} ${R.eyeY - r.eye.h}
                    ${ex + r.eye.w * 0.5} ${R.eyeY - r.eye.h} ${ex + r.eye.w} ${R.eyeY}"
-                fill="none" stroke="${hair.shade}" stroke-width="${3 + r.eye.droop * 0.4}" stroke-linecap="round"/>
+                fill="none" stroke="#111111" stroke-width="${4 + r.eye.droop * 0.4}" stroke-linecap="round"/>
         </g>
       </g>`).join('')}
     </g>
@@ -424,18 +424,19 @@ export function buildPortrait(id, accent, opts = {}) {
     <path d="M ${CX - 3} ${R.eyeY + 8} C ${CX + r.nose.w * 0.3} ${R.noseY - 22}
              ${CX + r.nose.w} ${R.noseY - 8} ${CX + r.nose.w * 0.4} ${R.noseY}
              C ${CX + 2} ${R.noseY + 5} ${CX - 6} ${R.noseY + 3} ${CX - 10} ${R.noseY - 2}"
-          fill="none" stroke="${skin.shade}" stroke-width="3.2" stroke-linecap="round" opacity=".85"/>
-    <ellipse cx="${CX - 9}" cy="${R.noseY - 3}" rx="3.4" ry="2.4" fill="${skin.shade}" opacity=".8"/>
-    <ellipse cx="${CX + 11}" cy="${R.noseY - 3}" rx="3.4" ry="2.4" fill="${skin.shade}" opacity=".8"/>
+          fill="none" stroke="#111111" stroke-width="4" stroke-linecap="round" opacity=".9"/>
+    <ellipse cx="${CX - 9}" cy="${R.noseY - 3}" rx="3.6" ry="2.6" fill="#111111"/>
+    <ellipse cx="${CX + 11}" cy="${R.noseY - 3}" rx="3.6" ry="2.6" fill="#111111"/>
 
     ${mouth}
-    ${r.beard ? `<path d="${r.beard}" fill="url(#${n}-hair)"/>` : ''}
-    ${r.moustache ? `<path d="${r.moustache}" fill="url(#${n}-hair)"/>` : ''}
-    ${r.hairFront ? `<path class="p-hairfront" d="${r.hairFront}" fill="url(#${n}-hair)"/>` : ''}
+    ${r.beard ? `<path d="${r.beard}" fill="${hair.base}" stroke="#111111" stroke-width="6" stroke-linejoin="round"/>` : ''}
+    ${r.moustache ? `<path d="${r.moustache}" fill="${hair.base}" stroke="#111111" stroke-width="6" stroke-linejoin="round"/>` : ''}
+    ${r.hairFront ? `<path class="p-hairfront" d="${r.hairFront}" fill="${hair.base}" stroke="#111111" stroke-width="6" stroke-linejoin="round"/>` : ''}
     ${r.curls ? r.curls.map(([x, y], i) =>
       `<circle class="p-curl" style="--cd:${(i * 0.42).toFixed(2)}s" cx="${x}" cy="${y}"
-               r="${11 - (i % 2) * 1.6}" fill="url(#${n}-hair)"/>`).join('') : ''}
-    ${r.headwear ? `<path d="${r.headwear}" fill="${id === 'alhaytham' ? '#efe6d2' : cloth.base}"/>` : ''}
+               r="${11 - (i % 2) * 1.6}" fill="${hair.base}" stroke="#111111" stroke-width="6" stroke-linejoin="round"/>`).join('') : ''}
+    ${r.headwear ? `<path d="${r.headwear}" fill="${r.hatInk || cloth.base}"
+        stroke="#111111" stroke-width="6" stroke-linejoin="round"/>` : ''}
     ${r.headwear2 ? `<path d="${r.headwear2}" fill="#ddd0b4"/>
       <g fill="none" stroke="#bda981" stroke-linecap="round">
         <path d="M 100 176 q 110 -30 220 0" stroke-width="2.6"/>

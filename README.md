@@ -24,12 +24,17 @@ behind experiments you have to run yourself:
 | 08 | Stephanie Kwolek (1923–2014) | Mix two monomers; most pairs detonate | Kevlar, from a cloudy batch everyone else would have binned |
 | 09 | John Snow (1813–1858) | Survey the houses, then pull the pump handle | Epidemiology, chlorinated water, contact tracing |
 | 10 | Tu Youyou (b. 1930) | Pick a solvent, set a temperature, don't cook it | Artemisinin — the front-line malaria drug |
+| 11 | Henrietta Swan Leavitt (1868–1921) | Tap the beat of a blinking star | The standard candle every cosmic distance is measured against |
+| 12 | Lewis Howard Latimer (1848–1928) | Pick a fibre, pick how you bake it | The process that made electric light affordable |
+| 13 | Charles R. Drew (1904–1950) | Hold the centrifuge in the band | Blood plasma banking, and the blood bank as a system |
+| 14 | Mária Telkes (1900–1995) | Track the sun, bank the heat, survive the night | Phase-change thermal storage — the renewables storage problem |
+| 15 | Nikolai Vavilov (1887–1943) | Guard the boxes for 872 days | Every seed bank on Earth, Svalbard included |
 
 ## What's in it
 
 - **A 3D hall** — five shrines on a ring around a turning core, on a shader
-  floor, under a procedural nebula, with selective bloom. Drag, scroll, arrow
-  keys, or click a shrine.
+  dot-screen floor under flat newsprint sky. Drag, swipe, scroll, arrow keys,
+  number keys, or tap a shrine.
 - **Quest trees** — every node is a documented contribution with a date and,
   where one exists, a paper reference. Nodes unlock along prerequisite chains;
   studying one awards XP and lights the links to what it made possible.
@@ -38,17 +43,29 @@ behind experiments you have to run yourself:
 - **Procedural audio** — every sound is synthesised with oscillators and noise
   buffers at runtime. No audio files.
 
+## One theme across both wings
+
+The whole site runs on the supplied pop-art system: four flat inks on newsprint
+cream, Ben-Day dot fields instead of tints, a heavy black outline on every
+object, hard offset shadows with zero blur, and `steps()` easing so nothing
+motion-blurs. That includes the 3D hall — flat unlit materials, black edge
+lines, a dot-screen floor and no bloom, because comic art has no glow.
+
 ## About the art
 
 The portraits are neither photographs nor AI generations. They are drawn in
 code from one shared rig — the same skull geometry, the same three-band
 lighting model, the same palette structure — with each character expressed as a
 parameter set plus a handful of hand-authored silhouette paths. That is what
-makes five separate drawings read as one roster.
+makes ten separate drawings read as one roster.
+
+Each character is drawn with flat inks, a black outline and a Ben-Day screen
+for shading — one ink tinted by printing dots over it, never by a lighter ink —
+plus a silkscreen-style offset behind the silhouette.
 
 Because they are live inline SVG, they actually animate: independent blink
 cycles, breathing, head sway, drifting background glyphs, and pupils that track
-the cursor. `portrait-test.html` renders all five side by side as a rig sheet.
+the cursor. `portrait-test.html` renders them side by side as a rig sheet.
 
 No likeness of Ibn al-Haytham survives; that portrait is an acknowledged
 invention, and the site says so.
@@ -91,6 +108,10 @@ index.html            boot screen, hall overlay, sheet container
 css/style.css         tokens, screens, quest tree, portrait rig animation
 js/data.js            the researched content — quests, artifacts, sources
 js/portrait.js        the shared character rig; five parameter sets
+css/pop.css           the shared pop-art system — tokens, objects, rules
+lab.html              Wing II, the Pop Lab
+js/lab-data.js        scientists 06-15, researched, with sources
+js/lab.js             the ten experiments
 js/scene.js           Three.js hall, shaders, camera, picking
 js/ui.js              character sheets, quest tree, progression
 js/audio.js           synthesised sound effects
@@ -102,4 +123,12 @@ vendor/three/         Three.js r169, vendored
 Three.js r169 is vendored under `vendor/three/` (core plus the postprocessing
 passes, ~1.4 MB) with its addon imports rewritten to relative paths. The page
 makes **no external network requests at runtime** — no CDN, no fonts, no
-analytics — so it works offline and behind a strict CSP.
+analytics — so it works offline and behind a strict CSP. The three pop-art
+faces (Bangers, Archivo Black, Space Mono) are self-hosted woff2, 88 KB total.
+
+## Mobile
+
+Both wings are built for touch: no horizontal overflow at 390 px, interactive
+targets at 42 px or larger, the hall's camera pulls back on narrow viewports so
+the shrine is not cropped, and the press-and-hold controls capture the pointer
+so a button travelling into its shadow cannot cancel the hold.

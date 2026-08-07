@@ -125,7 +125,75 @@ const STAGES = {
     <div class="ctrl-row" style="margin:14px 0 0">
       <span class="readout">Yield: <b data-yield>0%</b></span>
       <button class="pop-btn sm red" data-run>Run extraction</button>
-    </div>`
+    </div>`,
+
+  cepheid: () => `
+    <canvas class="play" width="900" height="300" data-canvas></canvas>
+    <div class="ctrl-row" style="margin-top:14px">
+      <button class="pop-btn sm red" data-tap>Tap at peak</button>
+      <span class="readout">Peaks timed: <b data-taps>0</b> / 3</span>
+      <span class="readout">Period: <b data-period>— s</b></span>
+    </div>
+    <div data-q2 hidden style="margin-top:16px">
+      <div class="balloon" style="max-width:none;margin-bottom:26px">
+        Two stars look equally bright from here. One blinks every 3 days, one every 30.
+        Which is further away?
+      </div>
+      <div class="ctrl-row">
+        <button class="chip" data-a2="slow">The 30-day one</button>
+        <button class="chip" data-a2="fast">The 3-day one</button>
+        <button class="chip" data-a2="same">Same distance</button>
+      </div>
+    </div>`,
+
+  filament: () => `
+    <div class="ctrl-row" role="group" aria-label="Fibre">
+      <span class="readout">Fibre:</span>
+      <button class="chip" data-f="cotton" aria-pressed="true">Cotton thread</button>
+      <button class="chip" data-f="bamboo" aria-pressed="false">Bamboo</button>
+      <button class="chip" data-f="paper" aria-pressed="false">Paper</button>
+    </div>
+    <div class="ctrl-row" role="group" aria-label="Carbonising method">
+      <span class="readout">Bake it:</span>
+      <button class="chip" data-m="bare" aria-pressed="true">Bare in the oven</button>
+      <button class="chip" data-m="card" aria-pressed="false">In a cardboard envelope</button>
+    </div>
+    <canvas class="play" width="900" height="280" data-canvas></canvas>
+    <div class="ctrl-row" style="margin-top:14px">
+      <span class="readout">Lamp life: <b data-life>—</b></span>
+      <button class="pop-btn sm red" data-burn>Switch on</button>
+    </div>`,
+
+  centrifuge: () => `
+    <canvas class="play" width="900" height="300" data-canvas></canvas>
+    <div class="ctrl-row" style="margin-top:14px">
+      <button class="pop-btn sm red" data-spin>Hold to spin</button>
+      <span class="readout">RPM: <b data-rpm>0</b></span>
+      <span class="readout">Held in band: <b data-hold>0.0</b>s / 4.0s</span>
+    </div>
+    <p class="hintline" style="margin-top:8px">Press and hold. Let go and it slows. Keep the needle inside the green.</p>`,
+
+  solar: () => `
+    <canvas class="play" width="900" height="320" data-canvas></canvas>
+    <div class="dial-wrap" style="margin-top:14px">
+      <span class="readout">Collector angle:</span>
+      <input class="pop-range" type="range" min="0" max="180" value="90" data-angle aria-label="Collector angle">
+    </div>
+    <div class="ctrl-row">
+      <span class="readout">Salt charged: <b data-charge>0%</b></span>
+      <span class="readout"><b data-phase>Daybreak</b></span>
+      <button class="pop-btn sm red" data-startday>Start the day</button>
+    </div>`,
+
+  vault: () => `
+    <canvas class="play" width="900" height="260" data-canvas></canvas>
+    <div class="ctrl-row" style="margin-top:14px">
+      <span class="readout">Siege day: <b data-day>0</b> / 872</span>
+      <span class="readout">Rats at the door: <b data-rats>0</b></span>
+      <button class="pop-btn sm blue" data-guard>Guard the boxes</button>
+      <button class="pop-btn sm red" data-eat>Eat the seeds</button>
+    </div>
+    <p class="hintline" style="margin-top:8px" data-vmsg>Keep tapping GUARD to beat the rats back. The other button is always available.</p>`
 };
 
 function cardHTML(s, i) {
@@ -656,9 +724,454 @@ function initExtract(card) {
   draw();
 }
 
+/* ── 11 · Leavitt — the blinking star ────────────────────────────────── */
+
+function initCepheid(card) {
+  const cv = $('[data-canvas]', card);
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  const PERIOD = 2400;                 // ms between peaks
+  const t0 = performance.now();
+  const taps = [];
+  let raf;
+
+  // Brightness peaks sharply and decays — the sawtooth shape of a real Cepheid,
+  // which is why they are timeable by eye in the first place.
+  const phaseAt = (t) => ((t - t0) % PERIOD) / PERIOD;
+  const brightAt = (p) => (p < 0.18 ? p / 0.18 : 1 - (p - 0.18) / 0.82 * 0.75);
+
+  function draw() {
+    const now = performance.now();
+    const p = phaseAt(now);
+    const b = brightAt(p);
+    ctx.fillStyle = '#111'; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = 'rgba(255,255,255,.22)';
+    for (let i = 0; i < 90; i++) {
+      const x = (i * 137) % W, y = (i * 219) % H;
+      ctx.fillRect(x, y, 2, 2);
+    }
+    const r = 26 + b * 40;
+    ctx.fillStyle = '#ffd400';
+    ctx.beginPath(); ctx.arc(W / 2, 118, r, 0, 7); ctx.fill();
+    ctx.strokeStyle = '#fff9e6'; ctx.lineWidth = 5; ctx.stroke();
+    ctx.globalAlpha = b * .35;
+    ctx.beginPath(); ctx.arc(W / 2, 118, r + 34, 0, 7); ctx.fill();
+    ctx.globalAlpha = 1;
+
+    // light curve
+    ctx.strokeStyle = '#e6242a'; ctx.lineWidth = 4;
+    ctx.beginPath();
+    for (let x = 0; x <= W - 120; x++) {
+      const pp = ((x / (W - 120)) * 2.4) % 1;
+      const y = 258 - brightAt(pp) * 52;
+      x ? ctx.lineTo(60 + x, y) : ctx.moveTo(60 + x, y);
+    }
+    ctx.stroke();
+    const cx = 60 + p / 2.4 * (W - 120);
+    ctx.fillStyle = '#0b63d6';
+    ctx.beginPath(); ctx.arc(cx, 258 - b * 52, 9, 0, 7); ctx.fill();
+    ctx.strokeStyle = '#fff9e6'; ctx.lineWidth = 4; ctx.stroke();
+    raf = requestAnimationFrame(draw);
+  }
+
+  $('[data-tap]', card).addEventListener('click', () => {
+    const p = phaseAt(performance.now());
+    if (p > 0.12 && p < 0.34) {            // near the peak
+      taps.push(performance.now());
+      $('[data-taps]', card).textContent = String(taps.length);
+      sfx.move();
+      if (taps.length >= 3) {
+        const gaps = taps.slice(1).map((t, i) => t - taps[i]);
+        const avg = gaps.reduce((a, b) => a + b, 0) / gaps.length;
+        $('[data-period]', card).textContent = `${(avg / 1000).toFixed(1)} s`;
+        $('[data-q2]', card).hidden = false;
+        sfx.select();
+        cancelAnimationFrame(raf);
+      }
+    } else {
+      sfx.deny();
+      $('[data-period]', card).textContent = 'missed';
+    }
+  });
+
+  $$('[data-q2] .chip', card).forEach((b) => b.addEventListener('click', () => {
+    if (b.dataset.a2 === 'slow') { b.classList.add('done'); unlock(card); }
+    else boom($('[data-stage]', card), 'NOPE!');
+  }));
+
+  draw();
+}
+
+/* ── 12 · Latimer — the filament ─────────────────────────────────────── */
+
+function initFilament(card) {
+  const cv = $('[data-canvas]', card);
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  let fibre = 'cotton', method = 'bare', glow = 0, hours = 0, anim = null;
+
+  // The fibre barely matters. The cardboard envelope is the whole patent.
+  const lifeFor = () => {
+    const base = { cotton: 34, bamboo: 52, paper: 28 }[fibre];
+    return method === 'card' ? base * 12 : base;
+  };
+
+  function draw() {
+    ctx.fillStyle = '#fff9e6'; ctx.fillRect(0, 0, W, H);
+    const cx = W / 2;
+    // bulb
+    ctx.strokeStyle = '#111'; ctx.lineWidth = 6;
+    ctx.beginPath(); ctx.arc(cx, 118, 74, Math.PI * .78, Math.PI * .22); ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(cx - 30, 176); ctx.lineTo(cx - 30, 214);
+    ctx.lineTo(cx + 30, 214); ctx.lineTo(cx + 30, 176);
+    ctx.stroke();
+    ctx.fillStyle = '#111';
+    for (let y = 180; y < 214; y += 9) ctx.fillRect(cx - 30, y, 60, 4);
+
+    if (glow > 0) {
+      ctx.save(); ctx.globalAlpha = glow;
+      ctx.fillStyle = '#ffd400';
+      ctx.beginPath(); ctx.arc(cx, 118, 70, 0, 7); ctx.fill();
+      ctx.restore();
+    }
+    // filament
+    ctx.strokeStyle = glow > 0 ? '#e6242a' : '#111';
+    ctx.lineWidth = 5;
+    ctx.beginPath();
+    ctx.moveTo(cx - 20, 176);
+    ctx.lineTo(cx - 20, 140);
+    for (let i = 0; i < 5; i++) ctx.lineTo(cx - 20 + (i % 2 ? 0 : 40), 130 - i * 9);
+    ctx.lineTo(cx + 20, 140); ctx.lineTo(cx + 20, 176);
+    ctx.stroke();
+
+    if (method === 'card') {
+      ctx.strokeStyle = '#0b63d6'; ctx.lineWidth = 4;
+      ctx.setLineDash([9, 7]);
+      ctx.strokeRect(cx - 50, 82, 100, 100);
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#0b63d6';
+      ctx.font = 'bold 13px "Space Mono", monospace'; ctx.textAlign = 'center';
+      ctx.fillText('CARDBOARD ENVELOPE', cx, 74);
+    }
+    // life bar
+    const pct = Math.min(1, hours / 620);
+    ctx.fillStyle = '#fff'; ctx.fillRect(150, 240, W - 300, 20);
+    ctx.fillStyle = hours > 300 ? '#0b63d6' : '#e6242a';
+    ctx.fillRect(150, 240, (W - 300) * pct, 20);
+    ctx.strokeStyle = '#111'; ctx.lineWidth = 5; ctx.strokeRect(150, 240, W - 300, 20);
+  }
+
+  const pick = (sel, attr, set) => $$(sel, card).forEach((c) => c.addEventListener('click', () => {
+    set(c.dataset[attr]);
+    $$(sel, card).forEach((o) => o.setAttribute('aria-pressed', String(o === c)));
+    sfx.hover(); hours = 0; glow = 0; $('[data-life]', card).textContent = '—'; draw();
+  }));
+  pick('.chip[data-f]', 'f', (v) => { fibre = v; });
+  pick('.chip[data-m]', 'm', (v) => { method = v; });
+
+  $('[data-burn]', card).addEventListener('click', () => {
+    if (anim) return;
+    const target = lifeFor();
+    hours = 0; glow = 1;
+    const t0 = performance.now();
+    const step = () => {
+      const k = Math.min(1, (performance.now() - t0) / 1400);
+      hours = Math.round(target * k);
+      $('[data-life]', card).textContent = `${hours} hours`;
+      draw();
+      if (k < 1) { anim = requestAnimationFrame(step); return; }
+      anim = null;
+      if (target >= 300) {
+        $('[data-life]', card).textContent = `${target} hours — it holds`;
+        sfx.select(); setTimeout(() => unlock(card), 400);
+      } else {
+        glow = 0; draw();
+        $('[data-life]', card).textContent = `${target} hours — burnt out`;
+        boom($('[data-stage]', card), 'POP!');
+      }
+    };
+    step();
+  });
+
+  draw();
+}
+
+/* ── 13 · Drew — the centrifuge ──────────────────────────────────────── */
+
+function initCentrifuge(card) {
+  const cv = $('[data-canvas]', card);
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  const LO = 2600, HI = 3600;
+  let rpm = 0, held = 0, spinning = false, ang = 0, sep = 0, last = performance.now();
+
+  function draw() {
+    ctx.fillStyle = '#fff9e6'; ctx.fillRect(0, 0, W, H);
+    const cx = 250, cy = 150;
+
+    // rotor
+    ctx.save(); ctx.translate(cx, cy); ctx.rotate(ang);
+    ctx.strokeStyle = '#111'; ctx.lineWidth = 6;
+    ctx.beginPath(); ctx.arc(0, 0, 96, 0, 7); ctx.stroke();
+    [0, Math.PI].forEach((a) => {
+      ctx.save(); ctx.rotate(a);
+      ctx.fillStyle = '#e6242a'; ctx.fillRect(-16, -96, 32, 62);
+      ctx.strokeRect(-16, -96, 32, 62);
+      ctx.restore();
+    });
+    ctx.restore();
+
+    // dial
+    const dx = 620, dy = 150;
+    ctx.strokeStyle = '#111'; ctx.lineWidth = 6;
+    ctx.beginPath(); ctx.arc(dx, dy, 92, Math.PI * .8, Math.PI * 2.2); ctx.stroke();
+    // green band
+    const a0 = Math.PI * .8 + (LO / 5000) * Math.PI * 1.4;
+    const a1 = Math.PI * .8 + (HI / 5000) * Math.PI * 1.4;
+    ctx.strokeStyle = '#0b63d6'; ctx.lineWidth = 18;
+    ctx.beginPath(); ctx.arc(dx, dy, 92, a0, a1); ctx.stroke();
+    const na = Math.PI * .8 + (Math.min(rpm, 5000) / 5000) * Math.PI * 1.4;
+    ctx.strokeStyle = '#111'; ctx.lineWidth = 7;
+    ctx.beginPath(); ctx.moveTo(dx, dy);
+    ctx.lineTo(dx + Math.cos(na) * 84, dy + Math.sin(na) * 84); ctx.stroke();
+
+    // tube
+    ctx.strokeStyle = '#111'; ctx.lineWidth = 6;
+    ctx.beginPath();
+    ctx.moveTo(408, 60); ctx.lineTo(408, 210);
+    ctx.quadraticCurveTo(408, 246, 440, 246);
+    ctx.quadraticCurveTo(472, 246, 472, 210); ctx.lineTo(472, 60);
+    ctx.stroke();
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(410, 62); ctx.lineTo(410, 210);
+    ctx.quadraticCurveTo(410, 244, 440, 244);
+    ctx.quadraticCurveTo(470, 244, 470, 210); ctx.lineTo(470, 62);
+    ctx.closePath(); ctx.clip();
+    const split = 90 + sep * 90;
+    ctx.fillStyle = '#e6242a'; ctx.fillRect(405, 62, 70, 190);
+    ctx.fillStyle = sep > .3 ? '#ffd400' : '#e6242a';
+    ctx.fillRect(405, 62, 70, split);
+    ctx.restore();
+    ctx.fillStyle = '#111';
+    ctx.font = 'bold 12px "Space Mono", monospace'; ctx.textAlign = 'center';
+    if (sep > .5) { ctx.fillText('PLASMA', 440, 100); ctx.fillText('CELLS', 440, 226); }
+  }
+
+  function loop() {
+    const now = performance.now();
+    const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    rpm += (spinning ? 3400 : -2600) * dt;
+    rpm = Math.max(0, Math.min(5000, rpm));
+    ang += rpm / 900 * dt;
+    const inBand = rpm >= LO && rpm <= HI;
+    if (inBand) { held += dt; sep = Math.min(1, held / 4); }
+    else held = Math.max(0, held - dt * 1.6);
+    $('[data-rpm]', card).textContent = String(Math.round(rpm));
+    $('[data-hold]', card).textContent = held.toFixed(1);
+    draw();
+    if (held >= 4) {
+      sfx.select();
+      setTimeout(() => unlock(card), 350);
+      return;
+    }
+    requestAnimationFrame(loop);
+  }
+
+  // The button travels into its shadow on :active, which can slide it out from
+  // under a stationary finger and silently cancel the hold. Capture the pointer
+  // so the press survives that, and so a drag off the button still counts.
+  const btn = $('[data-spin]', card);
+  const on = (e) => {
+    e.preventDefault();
+    spinning = true;
+    try { btn.setPointerCapture(e.pointerId); } catch { /* older engines */ }
+  };
+  const off = (e) => {
+    spinning = false;
+    if (e && e.pointerId != null) { try { btn.releasePointerCapture(e.pointerId); } catch { /* already gone */ } }
+  };
+  btn.addEventListener('pointerdown', on);
+  btn.addEventListener('pointerup', off);
+  btn.addEventListener('pointercancel', off);
+  btn.addEventListener('keydown', (e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); spinning = true; } });
+  btn.addEventListener('keyup', () => { spinning = false; });
+  loop();
+}
+
+/* ── 14 · Telkes — the sun house ─────────────────────────────────────── */
+
+function initSolar(card) {
+  const cv = $('[data-canvas]', card);
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  let angle = 90, charge = 0, day = 0, running = false, night = false;
+
+  function draw() {
+    ctx.fillStyle = night ? '#0b1b33' : '#8fd4ff'; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = night ? 'rgba(255,255,255,.3)' : 'rgba(255,255,255,.45)';
+    for (let y = 6; y < 200; y += 11) for (let x = 6; x < W; x += 11) {
+      ctx.beginPath(); ctx.arc(x, y, 1.5, 0, 7); ctx.fill();
+    }
+    // sun travels 0 → 180° across the day
+    const sunA = Math.PI - (day / 100) * Math.PI;
+    const sx = W / 2 + Math.cos(sunA) * 330, sy = 220 - Math.sin(sunA) * 165;
+    if (!night) {
+      ctx.fillStyle = '#ffd400';
+      ctx.beginPath(); ctx.arc(sx, sy, 34, 0, 7); ctx.fill();
+      ctx.strokeStyle = '#111'; ctx.lineWidth = 6; ctx.stroke();
+    }
+    // ground + house
+    ctx.fillStyle = night ? '#122' : '#fff9e6'; ctx.fillRect(0, 220, W, H - 220);
+    ctx.strokeStyle = '#111'; ctx.lineWidth = 6;
+    ctx.beginPath(); ctx.moveTo(0, 220); ctx.lineTo(W, 220); ctx.stroke();
+    ctx.fillStyle = '#fff'; ctx.fillRect(W / 2 - 90, 236, 180, 60);
+    ctx.strokeRect(W / 2 - 90, 236, 180, 60);
+
+    // collector
+    const a = (angle / 180) * Math.PI;
+    ctx.save(); ctx.translate(W / 2, 232); ctx.rotate(-a);
+    ctx.fillStyle = '#e6242a'; ctx.fillRect(-8, -78, 16, 78);
+    ctx.strokeStyle = '#111'; ctx.lineWidth = 5; ctx.strokeRect(-8, -78, 16, 78);
+    ctx.restore();
+
+    // aim line
+    const err = Math.abs(angle - (180 - (day / 100) * 180));
+    ctx.strokeStyle = err < 16 ? '#ffd400' : 'rgba(17,17,17,.2)';
+    ctx.lineWidth = err < 16 ? 6 : 3;
+    ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(W / 2, 190); ctx.stroke();
+
+    // salt store
+    ctx.fillStyle = '#fff'; ctx.fillRect(60, 250, 130, 46);
+    ctx.fillStyle = '#ffd400'; ctx.fillRect(60, 250, 130 * (charge / 100), 46);
+    ctx.strokeStyle = '#111'; ctx.lineWidth = 5; ctx.strokeRect(60, 250, 130, 46);
+    ctx.fillStyle = '#111'; ctx.font = 'bold 12px "Space Mono", monospace'; ctx.textAlign = 'center';
+    ctx.fillText("GLAUBER'S SALT", 125, 243);
+  }
+
+  function loop() {
+    if (!running) return;
+    day += 0.55;
+    const want = 180 - (day / 100) * 180;
+    if (Math.abs(angle - want) < 16 && !night) charge = Math.min(100, charge + 0.72);
+    $('[data-charge]', card).textContent = `${Math.round(charge)}%`;
+    if (day >= 100 && !night) {
+      night = true;
+      $('[data-phase]', card).textContent = 'Nightfall';
+      setTimeout(() => {
+        running = false;
+        if (charge >= 70) {
+          $('[data-phase]', card).textContent = 'Warm till morning ✔';
+          sfx.select(); setTimeout(() => unlock(card), 400);
+        } else {
+          $('[data-phase]', card).textContent = 'The house went cold';
+          boom($('[data-stage]', card), 'BRRR!');
+          setTimeout(() => { day = 0; charge = 0; night = false; angle = 90;
+            $('[data-angle]', card).value = 90;
+            $('[data-phase]', card).textContent = 'Daybreak'; draw(); }, 1400);
+        }
+      }, 900);
+    }
+    draw();
+    requestAnimationFrame(loop);
+  }
+
+  $('[data-angle]', card).addEventListener('input', (e) => { angle = Number(e.target.value); draw(); });
+  $('[data-startday]', card).addEventListener('click', () => {
+    if (running) return;
+    day = 0; charge = 0; night = false; running = true;
+    $('[data-phase]', card).textContent = 'Morning';
+    loop();
+  });
+  draw();
+}
+
+/* ── 15 · Vavilov — the vault ────────────────────────────────────────── */
+
+function initVault(card) {
+  const cv = $('[data-canvas]', card);
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  let day = 0, rats = 0, running = false, lost = false;
+
+  function draw() {
+    ctx.fillStyle = '#111'; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = 'rgba(255,249,230,.12)';
+    for (let y = 5; y < H; y += 12) for (let x = 5; x < W; x += 12) {
+      ctx.beginPath(); ctx.arc(x, y, 1.5, 0, 7); ctx.fill();
+    }
+    // crates
+    for (let i = 0; i < 8; i++) {
+      const x = 70 + (i % 4) * 200, y = 54 + Math.floor(i / 4) * 108;
+      ctx.fillStyle = lost && i === 3 ? '#3a3a3a' : '#ffd400';
+      ctx.fillRect(x, y, 150, 76);
+      ctx.strokeStyle = '#fff9e6'; ctx.lineWidth = 5; ctx.strokeRect(x, y, 150, 76);
+      ctx.fillStyle = '#111'; ctx.font = 'bold 12px "Space Mono", monospace'; ctx.textAlign = 'center';
+      ctx.fillText(['RICE', 'WHEAT', 'MAIZE', 'PEAS', 'POTATO', 'OATS', 'BARLEY', 'GROUNDNUT'][i], x + 75, y + 44);
+    }
+    // rats
+    ctx.fillStyle = '#e6242a';
+    for (let i = 0; i < rats; i++) {
+      const x = 40 + (i * 97) % (W - 80);
+      ctx.beginPath(); ctx.ellipse(x, H - 22, 15, 9, 0, 0, 7); ctx.fill();
+    }
+    ctx.fillStyle = '#fff9e6'; ctx.font = 'bold 15px "Space Mono", monospace'; ctx.textAlign = 'left';
+    ctx.fillText(`SIEGE DAY ${Math.round(day)}`, 24, 28);
+  }
+
+  function loop() {
+    if (!running) return;
+    day += 8.4;
+    if (Math.random() < 0.28) rats++;
+    $('[data-day]', card).textContent = String(Math.min(872, Math.round(day)));
+    $('[data-rats]', card).textContent = String(rats);
+    draw();
+    if (rats >= 8) {
+      running = false;
+      $('[data-vmsg]', card).textContent = 'The rats got in. Guard faster — tap to beat them back.';
+      boom($('[data-stage]', card), 'RATS!');
+      setTimeout(() => { rats = 3; running = true; loop(); }, 1200);
+      return;
+    }
+    if (day >= 872) {
+      running = false;
+      $('[data-vmsg]', card).innerHTML = '<b>872 days. The collection survived. Nine of them did not.</b>';
+      sfx.select();
+      setTimeout(() => unlock(card), 500);
+      return;
+    }
+    setTimeout(loop, 90);
+  }
+
+  $('[data-guard]', card).addEventListener('click', () => {
+    if (!running) { running = true; $('[data-vmsg]', card).textContent = 'Holding the line…'; loop(); }
+    rats = Math.max(0, rats - 2);
+    $('[data-rats]', card).textContent = String(rats);
+    sfx.hover();
+    draw();
+  });
+
+  $('[data-eat]', card).addEventListener('click', () => {
+    running = false; lost = true; draw();
+    boom($('[data-stage]', card), 'GONE');
+    $('[data-vmsg]', card).innerHTML =
+      '<b>You ate the groundnuts.</b> That variety existed nowhere else on Earth — Alexander Stchukin ' +
+      'starved to death at his desk holding a packet of them rather than open it. Tap GUARD to start again.';
+    setTimeout(() => { lost = false; day = 0; rats = 0; draw();
+      $('[data-day]', card).textContent = '0'; }, 2600);
+  });
+
+  draw();
+}
+
 /* ── boot ────────────────────────────────────────────────────────────── */
 
-const INIT = { crater: initCrater, hop: initHop, mix: initMix, pump: initPump, extract: initExtract };
+const INIT = {
+  crater: initCrater, hop: initHop, mix: initMix, pump: initPump, extract: initExtract,
+  cepheid: initCepheid, filament: initFilament, centrifuge: initCentrifuge,
+  solar: initSolar, vault: initVault
+};
 
 $('#cards').innerHTML = LAB.map(cardHTML).join('');
 $$('.card').forEach((card) => INIT[card.dataset.game](card));

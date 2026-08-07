@@ -221,5 +221,225 @@ export const LAB = [
       { t: 'WHO — Malaria fact sheet', u: 'https://www.who.int/news-room/fact-sheets/detail/malaria' },
       { t: 'Malaria — Our World in Data (death rate decline)', u: 'https://ourworldindata.org/malaria' }
     ]
+  },
+
+  /* ─────────────────────────────────────────────────────────────── 11 ── */
+  {
+    id: 'leavitt',
+    name: 'Henrietta Swan Leavitt',
+    life: '1868 — 1921',
+    origin: 'Lancaster, Massachusetts',
+    role: 'Astronomer · "Computer"',
+    ink: 'blue',
+    hook: 'She was hired to count dots on glass plates. She handed back a ruler for the universe.',
+    game: 'cepheid',
+    gameTitle: 'The Blinking Star',
+    gameBrief: 'Tap the beat of the star. Three peaks and you have its period.',
+    gameHint: 'Longer blink = genuinely brighter star. That one fact is the whole ladder.',
+    beats: [
+      {
+        head: 'The women who were called computers',
+        body: 'Harvard College Observatory, 1893. Edward Pickering employs a room of women to measure photographic plates — cheaper than men, and by his own reckoning better at it. They are called <b>computers</b>, because that is the job: compute. Leavitt, deaf since a college illness, is put on variable stars. She is not permitted to operate a telescope.'
+      },
+      {
+        head: 'Same shelf, same distance',
+        body: 'She works the plates of the <b>Small Magellanic Cloud</b> and spots the trick nobody else has: everything in that cloud is at roughly the same distance from us. So if one star there <em>looks</em> brighter than another, it genuinely <b>is</b> brighter. The distance cancels out. It is the one place in the sky where you can compare stars honestly.'
+      },
+      {
+        head: '25 stars, one line',
+        body: 'In <b>1912</b> she publishes <em>Periods of 25 Variable Stars in the Small Magellanic Cloud</em>. Plot each star\'s brightness against how long it takes to pulse, and the points fall on a straight line. <b>The slower it blinks, the brighter it truly is.</b> Which means: time the blink, and you know the star\'s real brightness. Compare that to how dim it looks from here, and you have <b>its distance</b>.'
+      },
+      {
+        head: 'The first rung',
+        body: 'Until then, astronomers could only measure distance by parallax — good for the neighbours, useless past a few hundred light years. Leavitt handed over the first <b>standard candle</b>: a light of known wattage you could spot across the void. Hubble used exactly her method on Cepheids in Andromeda to prove it was another galaxy, and then to find that the universe is expanding.'
+      },
+      {
+        head: 'The letter that came too late',
+        body: 'She was paid around <b>thirty cents an hour</b>. She never held a post that let her follow her own discovery. In 1925 a Swedish mathematician wrote to Harvard to nominate her for the Nobel Prize, and had to be told she had died of cancer <b>four years earlier</b>, aged 53. The prize is not awarded posthumously.'
+      }
+    ],
+    today: 'Every number you have ever read about the size or age of the universe stands on her line. The expanding universe, the Big Bang, dark energy, the <b>13.8-billion-year</b> figure — all of it is calibrated on Cepheids, and Cepheids are calibrated on 25 stars a deaf woman timed by hand at thirty cents an hour. Astronomers now call it the <b>Leavitt Law</b>, which took them about a century.',
+    sources: [
+      { t: 'Henrietta Swan Leavitt — Britannica', u: 'https://www.britannica.com/biography/Henrietta-Swan-Leavitt' },
+      { t: 'Henrietta Swan Leavitt — The Harvard Plate Stacks', u: 'https://platestacks.cfa.harvard.edu/women-at-hco/henrietta-swan-leavitt' },
+      { t: 'The Legacy of Henrietta Leavitt: A Re-analysis of the First Cepheid Period–Luminosity Relation (arXiv 2025)', u: 'https://arxiv.org/abs/2502.17438' },
+      { t: 'Period–luminosity relation — Britannica', u: 'https://www.britannica.com/science/period-luminosity-relation' }
+    ]
+  },
+
+  /* ─────────────────────────────────────────────────────────────── 12 ── */
+  {
+    id: 'latimer',
+    name: 'Lewis Howard Latimer',
+    life: '1848 — 1928',
+    origin: 'Chelsea, Massachusetts',
+    role: 'Draftsman · Inventor',
+    ink: 'yellow',
+    hook: 'He did not invent the light bulb. He invented the reason you could afford one.',
+    game: 'filament',
+    gameTitle: 'The Filament',
+    gameBrief: 'Pick a fibre. Pick how you bake it. Then switch it on and see how long it survives.',
+    gameHint: 'The trick is not the fibre. It is what you wrap it in while it bakes.',
+    beats: [
+      {
+        head: 'Son of a fugitive',
+        body: 'His father George escaped slavery in Virginia and was put on trial in Boston in 1842 to decide whether he was a man or property. Lewis was born free six years later, lied about his age to join the Navy at 15, and came back to a job as an office boy at a patent firm — where he taught himself drafting by watching, and was promoted to head draftsman.'
+      },
+      {
+        head: 'The drawings for the telephone',
+        body: 'In 1876 he was the draftsman who prepared the patent drawings for <b>Alexander Graham Bell\'s telephone</b>, reportedly working nights against a filing deadline Bell won by hours. That is a footnote in most tellings. It is not the reason he is here.'
+      },
+      {
+        head: 'What was actually wrong with bulbs',
+        body: 'Edison\'s lamps worked. They just did not <em>last</em> — the carbon filaments came out of the oven warped and brittle and burned out in a few dozen hours, so light stayed a rich person\'s toy. The failure was not in the physics. It was in the <b>baking</b>.'
+      },
+      {
+        head: 'A cardboard envelope',
+        body: 'Latimer\'s patent of <b>17 January 1882</b>, "Process of Manufacturing Carbons", does one deceptively small thing: it encloses the filament blanks in a <b>cardboard envelope</b> during carbonisation. The card holds the shape and stops the fibre distorting and snapping as it bakes. Yield goes up, breakage goes down, and filaments start lasting hundreds of hours instead of dozens.'
+      },
+      {
+        head: 'Setting the record straight',
+        body: 'You will read that Latimer "invented the carbon filament light bulb". He <b>did not</b> — Edison and Swan had filament lamps before him. What he invented was the manufacturing process that made them cheap, durable and worth wiring a city for. He then installed public lighting in New York, Philadelphia, London and Montreal, wrote the first proper textbook on electric lighting in 1890, and was the only Black member of the <b>Edison Pioneers</b>.'
+      }
+    ],
+    today: 'Flick a switch tonight. The bulb is LED now and the filament is long gone — but the reason electric light became a thing ordinary households could have, rather than a demonstration piece, is that somebody worked out how to bake the fragile part without breaking it. Cheap, reliable light is the single biggest extension of the usable human day in history, and this is the patent that priced it in.',
+    sources: [
+      { t: 'Lewis Howard Latimer — Wikipedia (patent 252,386, 17 Jan 1882)', u: 'https://en.wikipedia.org/wiki/Lewis_Howard_Latimer' },
+      { t: 'Lewis Latimer — Lemelson–MIT', u: 'https://lemelson.mit.edu/resources/lewis-latimer' },
+      { t: 'Lewis Howard Latimer — Interesting Engineering biography', u: 'https://interestingengineering.com/engineers-directory/lewis-howard-latimer' },
+      { t: 'Bridgeport\'s Lighting Visionary — New Britain Industrial Museum', u: 'https://nbindustrial.org/blog/black-history-lewis-latimer' }
+    ]
+  },
+
+  /* ─────────────────────────────────────────────────────────────── 13 ── */
+  {
+    id: 'drew',
+    name: 'Charles R. Drew',
+    life: '1904 — 1950',
+    origin: 'Washington, D.C.',
+    role: 'Surgeon · Blood Researcher',
+    ink: 'red',
+    hook: 'He built the blood bank. Then they told him his own blood had to be stored separately.',
+    game: 'centrifuge',
+    gameTitle: 'The Centrifuge',
+    gameBrief: 'Spin it up. Hold it in the band. Too slow and nothing separates; too fast and the cells burst.',
+    gameHint: 'Hold, do not hammer. Steady in the green for four seconds.',
+    beats: [
+      {
+        head: 'Blood does not keep',
+        body: 'Whole blood spoils in about a week, and it has to match the recipient\'s type. In a war that is close to useless — you cannot ship it, stockpile it, or hand it to a medic in a field tent. Wounded men were dying of shock within reach of help.'
+      },
+      {
+        head: 'Spin the cells out',
+        body: 'Drew\'s insight, worked into his 1940 Columbia doctorate — the first medical doctorate awarded to a Black American — was to stop shipping blood at all. Spin it, and it separates: red cells at the bottom, straw-coloured <b>plasma</b> on top. Plasma keeps far longer, can be dried to powder and rehydrated, and — critically — <b>needs no type matching</b>. You can give it to anyone.'
+      },
+      {
+        head: 'Blood for Britain',
+        body: 'In 1940 he ran <b>Blood for Britain</b>, shipping plasma across the Atlantic to the Blitz, and worked out the things nobody had had to solve yet: sterile mass collection, standard testing, refrigerated transport, the mobile donation unit. He essentially designed <b>the blood bank</b> as a system, then set up the American Red Cross\'s national programme.'
+      },
+      {
+        head: 'The order he would not carry out',
+        body: 'In 1941 the US military instructed that blood from Black donors be <b>stored separately</b> from white donors\' blood, or excluded entirely. Drew — who had just built the entire supply — said publicly that there was no scientific basis for it whatsoever, because there is none: plasma is plasma. He resigned. The policy stood, in some form, until <b>1950</b>.'
+      },
+      {
+        head: 'And the myth about his death',
+        body: 'He died in a car crash in North Carolina in <b>1950</b>, aged 45. A story has circulated ever since that he bled to death after a whites-only hospital turned him away. It is <b>not true</b> — he was treated at Alamance General and the doctors, by the account of the colleagues travelling with him, worked hard on him; his injuries were unsurvivable. The real injustice does not need embellishing.'
+      }
+    ],
+    today: 'Every blood drive, every fridge of labelled units, every bag of plasma hanging over a trauma bay runs on the system he designed. Plasma is still the thing that goes into a patient when there is no time to find out their type — which means it is the thing that buys the minutes. It exists because a surgeon worked out that the useful part of blood is the part you can spin off the top.',
+    sources: [
+      { t: 'Charles R. Drew — Wikipedia', u: 'https://en.wikipedia.org/wiki/Charles_R._Drew' },
+      { t: 'Charles Drew — Profiles in Science, US National Library of Medicine', u: 'https://profiles.nlm.nih.gov/spotlight/bg/feature/biographical' },
+      { t: 'Charles Richard Drew — Britannica', u: 'https://www.britannica.com/biography/Charles-Richard-Drew' },
+      { t: 'The Charles Drew death myth — Snopes', u: 'https://www.snopes.com/fact-check/charles-drew-blood-bank/' }
+    ]
+  },
+
+  /* ─────────────────────────────────────────────────────────────── 14 ── */
+  {
+    id: 'telkes',
+    name: 'Mária Telkes',
+    life: '1900 — 1995',
+    origin: 'Budapest → Massachusetts',
+    role: 'Physical Chemist',
+    ink: 'yellow',
+    hook: 'Everyone could catch sunshine. She worked out how to keep it until Tuesday.',
+    game: 'solar',
+    gameTitle: 'The Sun House',
+    gameBrief: 'Track the sun across the day and bank the heat. Then survive the night on what you stored.',
+    gameHint: 'Catching heat is easy. The salt is what gets you to morning.',
+    beats: [
+      {
+        head: 'The problem was never collection',
+        body: 'Pointing something black at the sun and getting it hot is trivial. The reason solar heating went nowhere for a century is that the sun sets, and a tank of hot water goes cold by about 3 a.m. Storage was the wall everybody hit.'
+      },
+      {
+        head: 'Heat hidden in a phase change',
+        body: 'Telkes went after <b>Glauber\'s salt</b> — sodium sulfate decahydrate. It melts at around 32 °C, and melting <b>swallows an enormous amount of energy without the temperature rising</b>. Then, when it refreezes at night, it gives all of that back. Weight for weight it banks several times what water can. She was storing heat in a change of state rather than in a change of temperature.'
+      },
+      {
+        head: 'The Dover Sun House',
+        body: 'In <b>1948</b>, with architect <b>Eleanor Raymond</b> and funded by sculptor Amelia Peabody, she built a wedge-shaped house in Dover, Massachusetts with south-facing collectors and bins of Glauber\'s salt in the walls. No furnace. It carried its occupants through <b>New England winters</b>, and at one point ran eleven days of cloud on stored heat alone. It is the first house heated by stored solar energy.'
+      },
+      {
+        head: 'The still that saved airmen',
+        body: 'During the war she had been asked for something to keep downed pilots alive at sea, and designed a <b>solar still</b>: a transparent inflatable that evaporates seawater and condenses it as drinking water. It went into life rafts. It is credited with saving the lives of torpedoed sailors and downed airmen, and the same principle is still used in survival kits and in off-grid desalination.'
+      },
+      {
+        head: 'The Sun Queen',
+        body: 'Colleagues called her the <b>Sun Queen</b>, not entirely kindly — MIT\'s own solar committee pushed her off the project after Dover. She kept going for another forty years across ovens, dryers and storage materials, holding around <b>20 patents</b>. She died in 1995, aged 95, on her first visit back to Budapest in nearly seventy years.'
+      }
+    ],
+    today: 'Phase-change materials are now in building panels, in the packs that keep vaccines cold in transit, in laptop and EV thermal management, and in the thermal stores that let solar plants run after dark. The whole modern argument about renewables — that the hard part is not generating the energy but <b>storing</b> it — is the argument she was already having in 1948, in a house with no furnace.',
+    sources: [
+      { t: 'Mária Telkes — Wikipedia', u: 'https://en.wikipedia.org/wiki/M%C3%A1ria_Telkes' },
+      { t: 'Maria Telkes, "The Sun Queen" — MIT Museum / American Experience (PBS)', u: 'https://www.pbs.org/wgbh/americanexperience/films/sun-queen/' },
+      { t: 'The Dover Sun House — Solar Energy history, NREL', u: 'https://www.nrel.gov/docs/fy05osti/35097.pdf' },
+      { t: 'Mária Telkes — National Inventors Hall of Fame', u: 'https://www.invent.org/inductees/maria-telkes' }
+    ]
+  },
+
+  /* ─────────────────────────────────────────────────────────────── 15 ── */
+  {
+    id: 'vavilov',
+    name: 'Nikolai Vavilov',
+    life: '1887 — 1943',
+    origin: 'Moscow',
+    role: 'Botanist · Geneticist',
+    ink: 'red',
+    hook: 'He collected seeds to end famine. He died of starvation. His staff chose to do the same.',
+    game: 'vault',
+    gameTitle: 'The Vault',
+    gameBrief: 'Leningrad, 1941. The siege has 872 days to run. Guard the boxes. There is food in them.',
+    gameHint: 'There is an EAT button. That is the entire experiment.',
+    beats: [
+      {
+        head: 'A hundred expeditions',
+        body: 'Vavilov spent the 1920s and 30s on collecting trips across <b>five continents</b> — Iran, Afghanistan, Ethiopia, the Andes, China — hunting the wild ancestors and landraces of crops. He worked out that crop species have <b>centres of origin</b>, specific regions where their genetic variety is concentrated, and that those places are where you go when a disease is wiping out a harvest. By 1940 he had assembled the largest seed collection on Earth, in Leningrad.'
+      },
+      {
+        head: 'The wrong theory to hold',
+        body: 'Then <b>Trofim Lysenko</b> rose. Lysenko rejected genetics outright, promised Stalin miracle yields, and delivered famine. Vavilov, who kept insisting on Mendel and on evidence, became the loudest obstacle in the country. He was <b>arrested in 1940</b>, interrogated for months, and sentenced to death — commuted to twenty years.'
+      },
+      {
+        head: 'January 1943',
+        body: 'He died in a prison in <b>Saratov</b>, of starvation. The man who had spent his life building the world\'s insurance policy against famine <b>starved to death in a Soviet cell</b>. Lysenko\'s theories went on to govern Soviet and Chinese agriculture for another two decades, with a body count.'
+      },
+      {
+        head: 'And the ones in the building',
+        body: 'Meanwhile Leningrad was under siege for <b>872 days</b>. Inside the institute sat tonnes of rice, wheat, maize, peas and potatoes, and outside people were eating wallpaper paste. The staff barricaded themselves in, took shifts through the nights beating off rats with metal rods, and refused to eat the collection. <b>Nine of them starved to death</b> at their desks, surrounded by food, because the seeds were not theirs to eat.'
+      },
+      {
+        head: 'Alexander Stchukin',
+        body: 'The keeper of the groundnuts was found dead at his desk with a packet of almonds in his hand. The rice specialist, Dmitri Ivanov, died surrounded by several thousand packs of rice. They were not saving the seeds for themselves, or even for Russia. They were saving them for whoever came next.'
+      }
+    ],
+    today: 'Every seed bank on the planet — including the <b>Svalbard Global Seed Vault</b> under the Arctic permafrost — is built on his method, and on the precedent that nine people set by dying next to a meal. When a fungus or a drought takes a staple crop, the resistant gene is found by going back to the wild relatives he mapped. That collection survived the siege. Most of it is still in St Petersburg, still being used.',
+    sources: [
+      { t: 'The Tragedy of the World\'s First Seed Bank — Science History Institute', u: 'https://www.sciencehistory.org/stories/magazine/the-tragedy-of-the-worlds-first-seed-bank/' },
+      { t: 'The men who starved to death to save the world\'s seeds — Russia Beyond', u: 'https://www.rbth.com/blogs/2014/05/12/the_men_who_starved_to_death_to_save_the_worlds_seeds_35135' },
+      { t: 'Nikolai Vavilov — Wikipedia', u: 'https://en.wikipedia.org/wiki/Nikolai_Vavilov' },
+      { t: 'Vavilov Research Institute of Plant Industry — Atlas Obscura', u: 'https://www.atlasobscura.com/places/vavilov-research-institute-of-plant-industry' }
+    ]
   }
 ];
