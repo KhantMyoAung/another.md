@@ -12,10 +12,10 @@
 <body>
 <div class="row" id="row"></div>
 <script type="module">
-  import { SCIENTISTS } from './js/data.js';
-  import { buildPortrait, trackPointer } from './js/portrait.js';
-  document.getElementById('row').innerHTML = SCIENTISTS.map((s) =>
-    `<div class="cell">${buildPortrait(s.id, s.accent)}<h3>${s.shortName}</h3></div>`).join('');
+  import { RIGS, buildPortrait, trackPointer } from './js/portrait.js';
+  const INK = ['#e6242a', '#0b63d6', '#ffd400'];
+  document.getElementById('row').innerHTML = Object.keys(RIGS).map((id, i) =>
+    `<div class="cell">${buildPortrait(id, INK[i % 3])}<h3>${id}</h3></div>`).join('');
   trackPointer(document);
 </script>
 </body></html>

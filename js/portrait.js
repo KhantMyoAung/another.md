@@ -69,6 +69,39 @@ const NECK = `M ${CX - 26} ${R.neckTop - 22}
    move — the value relationships stay locked, which is what carries the
    family resemblance across the set. */
 
+/* Shared silhouette parts. A rig is assembled from stock pieces — that is what
+   keeps fifteen faces looking like one printed set rather than fifteen drawings. */
+const BACK_ROUND = `M 210 66 C 138 66 106 118 106 184 C 106 224 116 258 124 278
+  C 116 236 118 190 128 162 C 150 110 270 110 292 162
+  C 302 190 304 236 296 278 C 304 258 314 224 314 184 C 314 118 282 66 210 66 Z`;
+
+const BACK_LONG = `M 210 66 C 132 66 100 122 100 190
+  C 100 246 92 302 86 356 C 108 344 130 336 150 330
+  C 136 268 132 200 148 160 C 174 108 246 108 272 160
+  C 288 200 284 268 270 330 C 290 336 312 344 334 356
+  C 328 302 320 246 320 190 C 320 122 288 66 210 66 Z`;
+
+const FRONT_SWEPT = `M 118 180 C 120 106 158 70 210 70 C 262 70 300 106 302 180
+  C 292 146 272 128 244 124 C 250 138 244 148 232 150
+  C 222 130 194 126 174 138 C 162 146 152 158 146 172 C 138 158 126 164 118 180 Z`;
+
+const FRONT_PART = `M 116 184 C 116 108 156 68 210 68 C 264 68 304 108 304 184
+  C 296 146 276 126 238 120 C 224 134 206 140 186 138 C 160 136 136 152 116 184 Z`;
+
+const FRONT_WAVE = `M 114 188 C 114 106 156 66 210 66 C 264 66 306 106 306 188
+  C 300 160 288 146 274 148 C 280 132 266 120 252 126
+  C 250 110 230 104 214 116 C 200 104 178 110 172 128
+  C 156 122 142 132 146 150 C 130 148 118 164 114 188 Z`;
+
+const UPDO = `M 210 70 C 140 70 108 120 108 186 C 108 220 116 250 124 268
+  C 116 228 118 190 128 164 C 150 112 270 112 292 164
+  C 302 190 304 228 296 268 C 304 250 312 220 312 186 C 312 120 280 70 210 70 Z`;
+
+const COLLAR_ROUND = `M 176 366 C 176 392 190 408 210 408 C 230 408 244 392 244 366
+  C 236 384 224 392 210 392 C 196 392 184 384 176 366 Z`;
+const COLLAR_HIGH = `M 174 364 C 174 398 190 416 210 416 C 230 416 246 398 246 364
+  C 238 388 224 398 210 398 C 196 398 182 388 174 364 Z`;
+
 export const RIGS = {
   davinci: {
     face: { cranium: 94, cheekW: 88, jawW: 50, crownLift: 2, chinDrop: 0 },
@@ -134,6 +167,7 @@ export const RIGS = {
     skin: { base: '#c9955f', shade: '#8d6135', light: '#ffffff' },
     hair: { base: '#181310', shade: '#111111', light: '#ffffff' },
     cloth: { base: '#0b63d6', shade: '#111111', trim: '#ffd400' },
+    hatInk: '#efe6d2',
     rim: '#ffd400',
     /* turban: a tall wrapped dome plus a band across the brow */
     headwear: `M 92 156 C 86 76 140 34 210 34 C 280 34 334 76 328 156
@@ -200,6 +234,156 @@ export const RIGS = {
     extras: 'labcoat',
     glyphs: ['spin', 'crystal', 'decay'],
     blink: { dur: 7.0, delay: 0.9 }
+  },
+
+  /* ── Wing II ─────────────────────────────────────────────────────────── */
+
+  chatelet: {
+    face: { cranium: 87, cheekW: 82, jawW: 47, crownLift: 0, chinDrop: -1 },
+    eye: { gap: 40, w: 20, h: 12, iris: '#3d5a8a', droop: 2 },
+    brow: { w: 24, t: 6, inner: 2, outer: -4 },
+    nose: { w: 12, len: 42 }, mouth: 'smile',
+    skin: { base: '#f6d2b4', shade: '#e0a341', light: '#ffffff' },
+    hair: { base: '#3a2a20', shade: '#111111', light: '#ffffff' },
+    cloth: { base: '#0b63d6', shade: '#111111', trim: '#ffd400' },
+    rim: '#ffd400',
+    bun: { cx: 210, cy: 78, rx: 44, ry: 34 },
+    hairBack: UPDO, hairFront: FRONT_WAVE,
+    collar: COLLAR_ROUND, extras: 'trim',
+    glyphs: ['sphere', 'ring', 'lattice'], blink: { dur: 6.8, delay: 0.5 }
+  },
+
+  lamarr: {
+    face: { cranium: 86, cheekW: 81, jawW: 46, crownLift: 0, chinDrop: -6 },
+    eye: { gap: 40, w: 21, h: 12, iris: '#3b2e22', droop: 3 },
+    brow: { w: 25, t: 6, inner: 1, outer: -5 },
+    nose: { w: 12, len: 42 }, mouth: 'smile',
+    skin: { base: '#f6d2b4', shade: '#e0a341', light: '#ffffff' },
+    hair: { base: '#241d17', shade: '#111111', light: '#ffffff' },
+    cloth: { base: '#ffd400', shade: '#111111', trim: '#e6242a' },
+    rim: '#e6242a',
+    hairBack: BACK_LONG, hairFront: FRONT_WAVE,
+    collar: COLLAR_ROUND, extras: 'trim',
+    glyphs: ['squiggle', 'ray', 'ring'], blink: { dur: 5.9, delay: 2.2 }
+  },
+
+  kwolek: {
+    face: { cranium: 93, cheekW: 90, jawW: 58, crownLift: 0, chinDrop: -5 },
+    eye: { gap: 38, w: 17, h: 9, iris: '#4b3a2c', droop: 3 },
+    brow: { w: 24, t: 6, inner: 2, outer: -3 },
+    nose: { w: 12, len: 43 }, mouth: 'smile',
+    skin: { base: '#f2c79a', shade: '#e0a341', light: '#ffffff' },
+    hair: { base: '#3a2a20', shade: '#111111', light: '#ffffff' },
+    cloth: { base: '#ffffff', shade: '#111111', trim: '#0b63d6' },
+    rim: '#0b63d6',
+    hairBack: BACK_ROUND, hairFront: FRONT_WAVE,
+    collar: COLLAR_ROUND, extras: 'labcoat',
+    glyphs: ['lattice', 'crystal', 'ring'], blink: { dur: 7.2, delay: 1.1 }
+  },
+
+  snow: {
+    face: { cranium: 91, cheekW: 86, jawW: 57, crownLift: 0, chinDrop: -1 },
+    eye: { gap: 38, w: 17, h: 9, iris: '#3d4a3a', droop: 4 },
+    brow: { w: 26, t: 8, inner: 2, outer: -3 },
+    nose: { w: 14, len: 46 }, mouth: 'line',
+    skin: { base: '#f2c79a', shade: '#e0a341', light: '#ffffff' },
+    hair: { base: '#241d17', shade: '#111111', light: '#ffffff' },
+    cloth: { base: '#241d17', shade: '#111111', trim: '#ffffff' },
+    rim: '#ffd400',
+    hairBack: BACK_ROUND, hairFront: FRONT_SWEPT,
+    moustache: `M 166 270 C 185 257 202 264 210 272 C 218 264 235 257 254 270
+      C 245 291 224 296 210 290 C 196 296 175 291 166 270 Z`,
+    collar: COLLAR_HIGH, extras: 'tie',
+    glyphs: ['ring', 'vortex', 'crystal'], blink: { dur: 8.1, delay: 2.7 }
+  },
+
+  tu: {
+    face: { cranium: 85, cheekW: 81, jawW: 50, crownLift: 0, chinDrop: -6 },
+    eye: { gap: 37, w: 19, h: 8, iris: '#2a211a', droop: 2 },
+    brow: { w: 24, t: 6, inner: 1, outer: -3 },
+    nose: { w: 12, len: 41 }, mouth: 'smile',
+    skin: { base: '#f6d2b4', shade: '#e0a341', light: '#ffffff' },
+    hair: { base: '#0f0c0b', shade: '#111111', light: '#ffffff' },
+    cloth: { base: '#0b63d6', shade: '#111111', trim: '#ffd400' },
+    rim: '#ffd400',
+    hairBack: BACK_ROUND, hairFront: FRONT_PART,
+    collar: COLLAR_HIGH, extras: 'trim',
+    glyphs: ['crystal', 'decay', 'ring'], blink: { dur: 6.6, delay: 0.8 }
+  },
+
+  leavitt: {
+    face: { cranium: 88, cheekW: 83, jawW: 49, crownLift: 0, chinDrop: 2 },
+    eye: { gap: 40, w: 17, h: 11, iris: '#4b3a2c', droop: 3 },
+    brow: { w: 23, t: 6, inner: 2, outer: -3 },
+    nose: { w: 12, len: 42 }, mouth: 'line',
+    skin: { base: '#f6d2b4', shade: '#e0a341', light: '#ffffff' },
+    hair: { base: '#3a2a20', shade: '#111111', light: '#ffffff' },
+    cloth: { base: '#ffffff', shade: '#111111', trim: '#0b63d6' },
+    rim: '#0b63d6',
+    bun: { cx: 210, cy: 82, rx: 40, ry: 30 },
+    hairBack: UPDO, hairFront: FRONT_PART,
+    collar: COLLAR_HIGH, extras: 'trim',
+    glyphs: ['spin', 'sphere', 'ring'], blink: { dur: 7.6, delay: 3.0 }
+  },
+
+  latimer: {
+    face: { cranium: 92, cheekW: 88, jawW: 57, crownLift: -2, chinDrop: 0 },
+    eye: { gap: 38, w: 17, h: 10, iris: '#2a211a', droop: 3 },
+    brow: { w: 26, t: 7, inner: 2, outer: -3 },
+    nose: { w: 14, len: 45 }, mouth: 'line',
+    skin: { base: '#8a5a34', shade: '#5d3a1f', light: '#ffffff' },
+    hair: { base: '#1a1512', shade: '#111111', light: '#ffffff' },
+    cloth: { base: '#241d17', shade: '#111111', trim: '#ffffff' },
+    rim: '#ffd400',
+    hairBack: BACK_ROUND, hairFront: FRONT_SWEPT,
+    moustache: `M 164 270 C 184 256 202 264 210 272 C 218 264 236 256 256 270
+      C 246 292 224 296 210 290 C 196 296 174 292 164 270 Z`,
+    collar: COLLAR_HIGH, extras: 'tie',
+    glyphs: ['gear', 'ray', 'diagram'], blink: { dur: 6.9, delay: 1.6 }
+  },
+
+  drew: {
+    face: { cranium: 92, cheekW: 88, jawW: 59, crownLift: 0, chinDrop: -4 },
+    eye: { gap: 40, w: 18, h: 9, iris: '#2a211a', droop: 3 },
+    brow: { w: 26, t: 7, inner: 2, outer: -4 },
+    nose: { w: 14, len: 44 }, mouth: 'smile',
+    skin: { base: '#8a5a34', shade: '#5d3a1f', light: '#ffffff' },
+    hair: { base: '#14100e', shade: '#111111', light: '#ffffff' },
+    cloth: { base: '#ffffff', shade: '#111111', trim: '#e6242a' },
+    rim: '#e6242a',
+    hairBack: BACK_ROUND, hairFront: FRONT_PART,
+    moustache: `M 170 272 C 186 260 202 266 210 273 C 218 266 234 260 250 272
+      C 242 290 224 294 210 289 C 196 294 178 290 170 272 Z`,
+    collar: COLLAR_ROUND, extras: 'labcoat',
+    glyphs: ['decay', 'ring', 'spin'], blink: { dur: 7.4, delay: 0.6 }
+  },
+
+  telkes: {
+    face: { cranium: 91, cheekW: 88, jawW: 57, crownLift: 0, chinDrop: 1 },
+    eye: { gap: 38, w: 17, h: 10, iris: '#4b3a2c', droop: 3 },
+    brow: { w: 23, t: 6, inner: 2, outer: -3 },
+    nose: { w: 12, len: 42 }, mouth: 'smile',
+    skin: { base: '#f6d2b4', shade: '#e0a341', light: '#ffffff' },
+    hair: { base: '#8a7d6d', shade: '#111111', light: '#ffffff' },
+    cloth: { base: '#e6242a', shade: '#111111', trim: '#ffd400' },
+    rim: '#ffd400',
+    hairBack: BACK_ROUND, hairFront: FRONT_WAVE,
+    collar: COLLAR_ROUND, extras: 'glasses',
+    glyphs: ['sphere', 'ray', 'crystal'], blink: { dur: 6.2, delay: 2.4 }
+  },
+
+  vavilov: {
+    face: { cranium: 94, cheekW: 91, jawW: 61, crownLift: 0, chinDrop: -3 },
+    eye: { gap: 40, w: 19, h: 9, iris: '#3d4a3a', droop: 3 },
+    brow: { w: 26, t: 7, inner: 2, outer: -3 },
+    nose: { w: 13, len: 44 }, mouth: 'smile',
+    skin: { base: '#f2c79a', shade: '#e0a341', light: '#ffffff' },
+    hair: { base: '#3a2a20', shade: '#111111', light: '#ffffff' },
+    cloth: { base: '#241d17', shade: '#111111', trim: '#ffd400' },
+    rim: '#ffd400',
+    hairBack: BACK_ROUND, hairFront: FRONT_PART,
+    collar: COLLAR_HIGH, extras: 'tie',
+    glyphs: ['lattice', 'wing', 'ring'], blink: { dur: 7.9, delay: 1.3 }
   }
 };
 
