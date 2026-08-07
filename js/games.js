@@ -1,13 +1,15 @@
 /**
- * THE POP LAB — five experiments, five reveals.
+ * THE EXPERIMENTS.
  *
- * Each scientist's panel stays shut until you have actually operated their
- * apparatus. The experiments are simplified but not faked: the crater really
- * scales with v², the polymer pairs are the real monomers, and boiling the
- * wormwood really does destroy the yield.
+ * Ten rigs, each mounted into a single scientist's screen. A screen stays
+ * sealed until its apparatus has actually been operated.
+ *
+ * The experiments are simplified but not faked: the crater really scales with
+ * v², the polymer pairs are the real monomers, ether really does boil at 35 °C,
+ * and Snow's map really does carry the workhouse and brewery anomalies that
+ * made his argument.
  */
 
-import { LAB } from './lab-data.js';
 import { sfx } from './audio.js';
 
 const $ = (s, r = document) => r.querySelector(s);
@@ -37,15 +39,9 @@ function unlock(card) {
   if (!done.has(id)) { done.add(id); save(); }
   card.classList.add('open');
   sfx.unlock();
-  $$('.beat', card).forEach((b, i) => b.style.setProperty('--bd', `${i * 160}ms`));
   const foot = $('.stage-foot .readout', card);
-  if (foot) foot.innerHTML = '<b>✔ EXPERIMENT COMPLETE</b> — panel open below';
-  refreshProgress();
-  if (!reduced) card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-}
-
-function refreshProgress() {
-  $('[data-progress]').textContent = `${done.size} / ${LAB.length} experiments run`;
+  if (foot) foot.innerHTML = '<b>✔ EXPERIMENT COMPLETE</b>';
+  if (typeof card.__onDone === 'function') card.__onDone();
 }
 
 /* ── markup ──────────────────────────────────────────────────────────── */
@@ -195,52 +191,6 @@ const STAGES = {
     </div>
     <p class="hintline" style="margin-top:8px" data-vmsg>Keep tapping GUARD to beat the rats back. The other button is always available.</p>`
 };
-
-function cardHTML(s, i) {
-  const open = done.has(s.id);
-  return `
-  <article class="card ink-${s.ink} ${open ? 'open' : ''}" data-id="${s.id}" data-game="${s.game}">
-    <div class="card-head">
-      <span class="card-no">${String(i + 6).padStart(2, '0')}</span>
-      <div>
-        <h2 class="card-name">${s.name}</h2>
-        <p class="card-meta">${s.role} · ${s.life} · ${s.origin}</p>
-      </div>
-    </div>
-    <p class="card-hook">${s.hook}</p>
-
-    <div class="stage">
-      <div class="stage-bar">
-        <span class="stage-tag">${s.gameTitle}</span>
-        <p class="stage-brief">${s.gameBrief}</p>
-      </div>
-      <div class="stage-body" data-stage>${STAGES[s.game]()}</div>
-      <div class="stage-foot">
-        <span class="readout">${open ? '<b>✔ EXPERIMENT COMPLETE</b> — panel open below' : 'Locked — run it to read the story'}</span>
-        <span class="hintline">${s.gameHint}</span>
-      </div>
-    </div>
-
-    <p class="locked-note">▓▒░ PANEL SEALED — RUN THE EXPERIMENT ░▒▓</p>
-
-    <div class="beats">
-      ${s.beats.map((b, j) => `
-        <div class="beat" style="--bd:${j * 160}ms">
-          <h4>${b.head}</h4><p>${b.body}</p>
-        </div>`).join('')}
-
-      <div class="today">
-        <h4>So what does that have to do with you?</h4>
-        <p>${s.today}</p>
-      </div>
-
-      <div class="srcs">
-        <h5>Checked against</h5>
-        <ol>${s.sources.map((x) => `<li><a href="${x.u}" target="_blank" rel="noopener noreferrer">${x.t}</a></li>`).join('')}</ol>
-      </div>
-    </div>
-  </article>`;
-}
 
 /* ── 06 · du Châtelet — the crater test ──────────────────────────────── */
 
@@ -1165,7 +1115,7 @@ function initVault(card) {
   draw();
 }
 
-/* ── boot ────────────────────────────────────────────────────────────── */
+/* ── mounting ────────────────────────────────────────────────────────── */
 
 const INIT = {
   crater: initCrater, hop: initHop, mix: initMix, pump: initPump, extract: initExtract,
@@ -1173,6 +1123,34 @@ const INIT = {
   solar: initSolar, vault: initVault
 };
 
-$('#cards').innerHTML = LAB.map(cardHTML).join('');
-$$('.card').forEach((card) => INIT[card.dataset.game](card));
-refreshProgress();
+export const hasRun = (id) => done.has(id);
+export const runCount = () => done.size;
+
+/**
+ * Build one scientist's apparatus into `host` and wire its completion.
+ * Returns true if it had already been run on a previous visit.
+ */
+export function mountExperiment(host, sci, onDone) {
+  if (!INIT[sci.game]) return false;
+  const already = done.has(sci.id);
+  host.dataset.id = sci.id;
+  host.classList.add('card');
+  if (already) host.classList.add('open');
+  host.innerHTML = `
+    <div class="stage">
+      <div class="stage-bar">
+        <span class="stage-tag">${sci.gameTitle}</span>
+        <p class="stage-brief">${sci.gameBrief}</p>
+      </div>
+      <div class="stage-body" data-stage>${STAGES[sci.game]()}</div>
+      <div class="stage-foot">
+        <span class="readout">${already
+          ? '<b>✔ EXPERIMENT COMPLETE</b>'
+          : 'Sealed — run it to read the story'}</span>
+        <span class="hintline">${sci.gameHint}</span>
+      </div>
+    </div>`;
+  host.__onDone = onDone;
+  INIT[sci.game](host);
+  return already;
+}

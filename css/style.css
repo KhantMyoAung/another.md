@@ -146,7 +146,7 @@ kbd {
   grid-row: 1; display: flex; justify-content: space-between; align-items: flex-start;
   gap: 10px; flex-wrap: wrap;
   padding: max(12px, env(safe-area-inset-top)) 12px 0;
-  padding-right: 116px;
+  padding-right: 184px;
 }
 .brand {
   font: 700 11px/1 var(--font-body); letter-spacing: .2em; text-transform: uppercase;
@@ -468,7 +468,7 @@ svg.portrait.static * { animation: none !important; }
 
 @media (max-width: 720px) {
   .hero-text { padding: 16px; box-shadow: 6px 6px 0 var(--ink); }
-  .hall-top { padding-right: 12px; padding-top: max(66px, calc(env(safe-area-inset-top) + 58px)); gap: 8px; }
+  .hall-top { padding-right: 12px; padding-top: max(70px, calc(env(safe-area-inset-top) + 62px)); gap: 8px; }
   .brand { display: none; }
   .completion { font-size: 10px; padding: 6px 12px; }
   .wing-link { font-size: 10px; padding: 7px 12px; }
@@ -489,4 +489,122 @@ svg.portrait.static * { animation: none !important; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
   .rise { opacity: 1 !important; }
   .sl-bar i { width: var(--v); }
+}
+
+/* ── the rail bar ────────────────────────────────────────────────────── */
+/* Replaces the old nameplate card. It sits low and slim so the portrait is
+   never behind it, and HallUI drives it from the scene's focus so it stays
+   truthful while the ring is dragged or scrolled. */
+
+.railbar {
+  display: flex; align-items: center; gap: 14px;
+  width: min(760px, 96vw);
+  padding: 10px 12px 10px 16px;
+  background: #fff; border: 4px solid var(--ink); border-radius: 999px;
+  box-shadow: 6px 6px 0 var(--ink);
+}
+.railbar.flip { animation: rail-in .22s steps(3); }
+@keyframes rail-in { from { transform: translateY(6px); opacity: .5; } to { transform: none; opacity: 1; } }
+
+.rb-no {
+  font-family: var(--font-display); font-size: 26px; line-height: 1;
+  color: var(--accent); -webkit-text-stroke: 2px var(--ink); paint-order: stroke fill;
+  flex: 0 0 auto;
+}
+.rb-text { flex: 1; min-width: 0; text-align: left; }
+.rb-text h2 {
+  font-family: var(--font-display); font-size: clamp(19px, 3.2vw, 27px);
+  line-height: 1.05; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.rb-title {
+  margin: 1px 0 0; display: flex; gap: 10px; align-items: baseline;
+  font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.rb-title span:first-child { font-family: var(--font-alt); color: var(--accent); font-size: 11px; }
+.rb-life { font-weight: 700; letter-spacing: .06em; }
+.railbar .rarity { flex: 0 0 auto; }
+.railbar .btn { flex: 0 0 auto; font-size: 17px; padding: 7px 18px; }
+
+/* 15 dots need to be small and scrollable rather than a wall of buttons */
+.dots {
+  max-width: min(760px, 96vw);
+  overflow-x: auto; scrollbar-width: none; padding: 2px 4px;
+  justify-content: flex-start;
+}
+.dots::-webkit-scrollbar { display: none; }
+.dot { width: 30px; height: 34px; flex: 0 0 auto; }
+.dot span { width: 12px; height: 12px; }
+.dot.on span { width: 26px; }
+
+#theme .dk { display: none; }
+:root[data-theme="dark"] #theme .lt { display: none; }
+:root[data-theme="dark"] #theme .dk { display: inline; }
+
+/* Wing II screens keep their story sealed until the apparatus has been run. */
+.beats { display: none; }
+.beats.shown { display: block; }
+.beats.shown ~ .locked-note { display: none; }
+
+/* ── dark mode ───────────────────────────────────────────────────────── */
+/* Same four inks, printed on black newsprint instead of cream. The outline
+   colour inverts to warm white, which is what carries the comic register. */
+
+:root[data-theme="dark"] {
+  --bg: #14110d;
+  --panel: #211c16;
+  --ink: #fdf3d8;
+  --muted: #9d927f;
+}
+:root[data-theme="dark"] body,
+:root[data-theme="dark"] body.pop { background: var(--bg); color: var(--ink); }
+:root[data-theme="dark"] .box,
+:root[data-theme="dark"] .boot-inner,
+:root[data-theme="dark"] .railbar,
+:root[data-theme="dark"] .nameplate,
+:root[data-theme="dark"] .brand,
+:root[data-theme="dark"] .completion,
+:root[data-theme="dark"] .icon-btn,
+:root[data-theme="dark"] .stage,
+:root[data-theme="dark"] .quest,
+:root[data-theme="dark"] .balloon,
+:root[data-theme="dark"] .backlink,
+:root[data-theme="dark"] dialog,
+:root[data-theme="dark"] .intro-panel > .intro,
+:root[data-theme="dark"] .intro-panel > .quote,
+:root[data-theme="dark"] .stats-wrap,
+:root[data-theme="dark"] .artifacts,
+:root[data-theme="dark"] .sources ul,
+:root[data-theme="dark"] .tree,
+:root[data-theme="dark"] .hero-text,
+:root[data-theme="dark"] .card.open .beats,
+:root[data-theme="dark"] .flask,
+:root[data-theme="dark"] .chip,
+:root[data-theme="dark"] .key,
+:root[data-theme="dark"] .xp-bar,
+:root[data-theme="dark"] .sl-bar,
+:root[data-theme="dark"] input[type=range].pop-range { background: var(--panel); color: var(--ink); }
+
+:root[data-theme="dark"] .artifact { background: #191510; }
+:root[data-theme="dark"] .quest.open { background: #3a3007; }
+:root[data-theme="dark"] .dot span { background: var(--panel); }
+:root[data-theme="dark"] .dot.on span { background: var(--pop-red); }
+:root[data-theme="dark"] #boot,
+:root[data-theme="dark"] .sheet { background-color: var(--bg); }
+:root[data-theme="dark"] .rd-web,
+:root[data-theme="dark"] .rd-spoke { stroke: rgba(253, 243, 216, .25); }
+:root[data-theme="dark"] .link { stroke: rgba(253, 243, 216, .3); }
+:root[data-theme="dark"] .beat b,
+:root[data-theme="dark"] .intro em,
+:root[data-theme="dark"] .q-detail em { color: #14110d; }
+:root[data-theme="dark"] .today { color: #fff; }
+/* Portraits stay printed on paper — a light panel mounted on a dark wall. */
+:root[data-theme="dark"] .art-frame { background: #fff9e6; }
+
+@media (max-width: 720px) {
+  .railbar { gap: 8px; padding: 8px 8px 8px 12px; border-width: 3px; box-shadow: 4px 4px 0 var(--ink); }
+  .rb-no { font-size: 20px; }
+  .rb-title { font-size: 10px; gap: 6px; }
+  .railbar .rarity { display: none; }
+  .railbar .btn { font-size: 15px; padding: 8px 14px; }
+  .railbar .btn kbd { display: none; }
 }

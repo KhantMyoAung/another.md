@@ -2,7 +2,7 @@
  * CODEX OF MINDS — wiring.
  */
 
-import { SCIENTISTS } from './data.js';
+import { ROSTER } from './roster.js';
 import { Hall } from './scene.js';
 import { Sheet, HallUI, totalCompletion, $, $$ } from './ui.js';
 import { trackPointer } from './portrait.js';
@@ -27,9 +27,12 @@ function init() {
   hall.onPick = (i) => {
     if (mode !== 'hall') return;
     if (i === hall.focus) openSheet(i);
-    else { hall.setFocus(i); hallUI.set(hall.focus); sfx.move(); }
+    else { hall.setFocus(i); sfx.move(); }
   };
   hall.onHover = (i) => { if (i >= 0 && mode === 'hall') sfx.hover(); };
+  // Drag and wheel change focus inside the scene. Listening here is what stops
+  // the rail going stale while the ring is being turned.
+  hall.onFocusChange = (i) => hallUI.set(i);
 
   hall.setFocus(0);
   hallUI.set(0);
@@ -47,7 +50,6 @@ function init() {
   /* hall controls */
   $$('[data-nav]', hallEl).forEach((b) => b.addEventListener('click', () => {
     hall.setFocus(hall.focus + Number(b.dataset.nav));
-    hallUI.set(hall.focus);
     sfx.move();
   }));
   $('[data-open]', hallEl).addEventListener('click', () => openSheet(hall.focus));
@@ -55,7 +57,6 @@ function init() {
     const d = e.target.closest('.dot');
     if (!d) return;
     hall.setFocus(Number(d.dataset.i));
-    hallUI.set(hall.focus);
     sfx.move();
   });
 
@@ -68,6 +69,27 @@ function init() {
   applyMute();
   mute.addEventListener('click', () => { sfx.setMuted(!sfx.muted); applyMute(); if (!sfx.muted) sfx.hover(); });
 
+  /* Theme: follow the system until the visitor overrides it, then remember. */
+  const themeBtn = $('#theme');
+  const applyTheme = () => {
+    const stored = localStorage.getItem('codex.theme');
+    const dark = stored ? stored === 'dark'
+      : matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+    themeBtn.setAttribute('aria-pressed', String(dark));
+    if (hall) hall.setPaper(dark ? 0x14110d : 0xfff9e6);
+  };
+  applyTheme();
+  themeBtn.addEventListener('click', () => {
+    const dark = document.documentElement.dataset.theme === 'dark';
+    localStorage.setItem('codex.theme', dark ? 'light' : 'dark');
+    applyTheme();
+    sfx.hover();
+  });
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    if (!localStorage.getItem('codex.theme')) applyTheme();
+  });
+
   const about = $('#about');
   $('#about-btn').addEventListener('click', () => about.showModal());
   about.addEventListener('click', (e) => { if (e.target.dataset.close !== undefined || e.target === about) about.close(); });
@@ -77,10 +99,10 @@ function init() {
     if (e.target.closest('input, textarea') || $('#about').open) return;
     if (mode === 'boot' && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); $('#start').click(); return; }
     if (mode === 'hall') {
-      if (e.key === 'ArrowLeft') { hall.setFocus(hall.focus - 1); hallUI.set(hall.focus); sfx.move(); }
-      if (e.key === 'ArrowRight') { hall.setFocus(hall.focus + 1); hallUI.set(hall.focus); sfx.move(); }
+      if (e.key === 'ArrowLeft') { hall.setFocus(hall.focus - 1); sfx.move(); }
+      if (e.key === 'ArrowRight') { hall.setFocus(hall.focus + 1); sfx.move(); }
       if (e.key === 'Enter') openSheet(hall.focus);
-      if (/^[1-5]$/.test(e.key)) { hall.setFocus(Number(e.key) - 1); hallUI.set(hall.focus); sfx.move(); }
+      if (/^[1-9]$/.test(e.key)) { hall.setFocus(Number(e.key) - 1); sfx.move(); }
     } else if (mode === 'sheet' && e.key === 'Escape') {
       sfx.back();
       toHall();
@@ -108,7 +130,7 @@ function openSheet(i) {
   hall.zoom(true);
   hallEl.classList.remove('in');
   setTimeout(() => { hallEl.hidden = true; }, 420);
-  setTimeout(() => sheet.open(SCIENTISTS[i]), 260);
+  setTimeout(() => sheet.open(ROSTER[i]), 260);
 }
 
 function refreshCompletion() {

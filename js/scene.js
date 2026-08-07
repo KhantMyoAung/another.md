@@ -11,11 +11,11 @@ import { EffectComposer } from '../vendor/three/addons/postprocessing/EffectComp
 import { RenderPass } from '../vendor/three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from '../vendor/three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from '../vendor/three/addons/postprocessing/OutputPass.js';
-import { SCIENTISTS } from './data.js';
+import { ROSTER } from './roster.js';
 import { portraitDataURI } from './portrait.js';
 
-const RING_R = 9.2;
-const STEP = (Math.PI * 2) / SCIENTISTS.length;
+const RING_R = 15.4;
+const STEP = (Math.PI * 2) / ROSTER.length;
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* ── shaders ─────────────────────────────────────────────────────────── */
@@ -185,6 +185,7 @@ export class Hall {
     this.shrines = [];
     this.onPick = () => {};
     this.onHover = () => {};
+    this.onFocusChange = () => {};
     this.hovered = -1;
     this.running = false;
 
@@ -230,7 +231,7 @@ export class Hall {
     /* sky */
     this.skyU = {
       uTime: { value: 0 },
-      uAccent: { value: new THREE.Color(SCIENTISTS[0].accent) },
+      uAccent: { value: new THREE.Color(ROSTER[0].accent) },
       uPaper: { value: new THREE.Color(0xfff9e6) }
     };
     s.add(new THREE.Mesh(
@@ -262,7 +263,7 @@ export class Hall {
     /* floor */
     this.floorU = {
       uTime: { value: 0 }, uPulse: { value: -1 },
-      uAccent: { value: new THREE.Color(SCIENTISTS[0].accent) },
+      uAccent: { value: new THREE.Color(ROSTER[0].accent) },
       uPaper: { value: new THREE.Color(0xfff9e6) }
     };
     const floor = new THREE.Mesh(
@@ -295,7 +296,7 @@ export class Hall {
     s.add(this.ring);
 
     const loader = new THREE.TextureLoader();
-    SCIENTISTS.forEach((sci, i) => {
+    ROSTER.forEach((sci, i) => {
       const g = new THREE.Group();
       const a = i * STEP;
       g.position.set(Math.sin(a) * RING_R, 0, Math.cos(a) * RING_R);
@@ -450,8 +451,16 @@ export class Hall {
     const k = Math.round((this.targetAngle - desired) / (Math.PI * 2));
     this.targetAngle = desired + k * Math.PI * 2;
     this.focus = idx;
-    this.setAccent(SCIENTISTS[idx].accent);
+    this.setAccent(ROSTER[idx].accent);
+    this.onFocusChange(idx);
     return idx;
+  }
+
+  /** Follow the page theme — the 3D ground is the same paper as the CSS. */
+  setPaper(hex) {
+    this.floorU.uPaper.value.set(hex);
+    this.skyU.uPaper.value.set(hex);
+    if (this.scene.fog) this.scene.fog.color.set(hex);
   }
 
   setAccent(hex) {
@@ -475,11 +484,14 @@ export class Hall {
     this.bloom.setSize(w, h);
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
-    // A phone in portrait has a narrow horizontal field of view, so the same
-    // camera distance crops the shrine badly. Pull back proportionally.
-    this.fit = this.camera.aspect < 1
-      ? Math.min(2.1, Math.max(1, 0.66 / this.camera.aspect))
-      : 1;
+    // A phone in portrait has a narrow horizontal field of view. Derive the
+    // pull-back from the geometry rather than guessing: work out the distance
+    // at which the slab plus a margin still spans the frame horizontally.
+    const halfV = THREE.MathUtils.degToRad(this.camera.fov) / 2;
+    const tanH = Math.tan(halfV) * this.camera.aspect;
+    const needed = 2.6 / Math.max(tanH, 0.001);          // half-width of a shrine + margin
+    const base = RING_R + 10.6;                          // the hall-mode distance
+    this.fit = Math.min(1.5, Math.max(1, needed / (base - RING_R)));
     this.tall = this.camera.aspect < 0.72;
   }
 
@@ -504,7 +516,7 @@ export class Hall {
     const camZ = THREE.MathUtils.lerp(RING_R + 4.4, RING_R + 10.6, d) * (this.fit || 1);
     const camY = THREE.MathUtils.lerp(1.4, 3.7, d);
     const lookZ = THREE.MathUtils.lerp(RING_R, RING_R - 4.6, d);
-    const lookY = THREE.MathUtils.lerp(0.3, this.tall ? -1.9 : -0.9, d);
+    const lookY = THREE.MathUtils.lerp(0.3, this.tall ? -1.1 : -0.9, d);
     const px = this.parallax.x * (0.5 + d * 1.2);
     const py = this.parallax.y * (0.25 + d * 0.6);
     const bobY = reduced ? 0 : Math.sin(t * 0.32) * 0.2 * d;

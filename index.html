@@ -16,7 +16,7 @@
 <!-- ── boot ─────────────────────────────────────────────────────────── -->
 <section id="boot" class="screen">
   <div class="boot-inner">
-    <p class="boot-kicker">Five minds · one hall</p>
+    <p class="boot-kicker">Fifteen minds · one hall</p>
     <h1 class="boot-title"><span>Codex</span><em>of</em><span>Minds</span></h1>
     <p class="boot-sub">
       An interactive hall of scientists, built like a character-select screen.
@@ -25,7 +25,7 @@
     <button id="start" class="btn big">
       <span class="btn-glow"></span>Enter the Hall
     </button>
-    <p class="boot-hint">Drag or use <kbd>←</kbd> <kbd>→</kbd> to turn the ring · <kbd>Enter</kbd> to open a codex</p>
+    <p class="boot-hint">Drag, scroll or use <kbd>←</kbd> <kbd>→</kbd> to turn the ring · <kbd>Enter</kbd> to open a codex</p>
   </div>
   <div class="boot-scan" aria-hidden="true"></div>
 </section>
@@ -34,7 +34,6 @@
 <section id="hall" class="screen" hidden>
   <header class="hall-top">
     <p class="brand">Codex&nbsp;of&nbsp;Minds</p>
-    <a class="wing-link" href="lab.html">Wing&nbsp;II · The&nbsp;Pop&nbsp;Lab →</a>
     <p class="completion" data-completion></p>
   </header>
 
@@ -42,13 +41,16 @@
   <button class="arrow right" data-nav="1" aria-label="Next">›</button>
 
   <div class="hall-bottom">
-    <div class="nameplate">
+    <!-- Slim rail, not a card: it never covers the portrait, and it is driven
+         by the scene's focus so it stays correct while you drag or scroll. -->
+    <div class="railbar">
+      <span class="rb-no" data-no>01</span>
+      <div class="rb-text">
+        <h2 data-name></h2>
+        <p class="rb-title"><span data-title></span><span class="rb-life" data-life></span></p>
+      </div>
       <span class="rarity" data-rar></span>
-      <h2 data-name></h2>
-      <p class="np-title" data-title></p>
-      <p class="np-life" data-life></p>
-      <p class="np-tag" data-tag></p>
-      <button class="btn" data-open>Open Codex <kbd>↵</kbd></button>
+      <button class="btn" data-open>Open <kbd>↵</kbd></button>
     </div>
     <nav class="dots" data-dots aria-label="Choose a scientist"></nav>
   </div>
@@ -61,6 +63,9 @@
 <div class="hud" hidden>
   <button id="mute" class="icon-btn" aria-pressed="false" title="Sound">
     <span class="on">♪</span><span class="off">✕</span>
+  </button>
+  <button id="theme" class="icon-btn" title="Light or dark" aria-pressed="false">
+    <span class="lt">☀</span><span class="dk">☾</span>
   </button>
   <button id="about-btn" class="icon-btn" title="About this build">?</button>
 </div>
