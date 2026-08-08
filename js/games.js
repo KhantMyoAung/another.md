@@ -189,7 +189,77 @@ const STAGES = {
       <button class="pop-btn sm blue" data-guard>Guard the boxes</button>
       <button class="pop-btn sm red" data-eat>Eat the seeds</button>
     </div>
-    <p class="hintline" style="margin-top:8px" data-vmsg>Keep tapping GUARD to beat the rats back. The other button is always available.</p>`
+    <p class="hintline" style="margin-top:8px" data-vmsg>Keep tapping GUARD to beat the rats back. The other button is always available.</p>`,
+
+  vortex: () => `
+    <div class="dial-wrap">
+      <span class="readout">Pump rate: <b data-rate>20</b></span>
+      <input class="pop-range" type="range" min="0" max="100" value="20" data-flow aria-label="Pump rate">
+    </div>
+    <canvas class="play" width="900" height="320" data-canvas></canvas>
+    <div class="ctrl-row" style="margin-top:14px">
+      <span class="readout">Valve: <b data-valve>open</b></span>
+      <button class="pop-btn sm red" data-pump>Pump the seeds through</button>
+    </div>`,
+
+  oring: () => `
+    <div class="dial-wrap">
+      <span class="readout">Water: <b data-temp>20 °C</b></span>
+      <input class="pop-range" type="range" min="-10" max="30" value="20" data-water aria-label="Water temperature">
+    </div>
+    <canvas class="play" width="900" height="300" data-canvas></canvas>
+    <div class="ctrl-row" style="margin-top:14px">
+      <span class="readout">Seal: <b data-seal>—</b></span>
+      <button class="pop-btn sm red" data-clamp>Clamp, chill, release</button>
+    </div>`,
+
+  camera: () => `
+    <div class="ctrl-row" role="group" aria-label="Lamps">
+      <span class="readout">Lamps:</span>
+      <button class="chip" data-lamp="0" aria-pressed="true">Lamp 1</button>
+      <button class="chip" data-lamp="1" aria-pressed="true">Lamp 2</button>
+      <button class="chip" data-lamp="2" aria-pressed="true">Lamp 3</button>
+    </div>
+    <canvas class="play" width="900" height="330" data-canvas></canvas>
+    <div data-q3 hidden style="margin-top:16px">
+      <div class="balloon" style="max-width:none;margin-bottom:26px">
+        You put out one lamp. What happened on the far wall?
+      </div>
+      <div class="ctrl-row">
+        <button class="chip" data-a3="one">Only that lamp's patch went dark</button>
+        <button class="chip" data-a3="all">Everything dimmed a little</button>
+        <button class="chip" data-a3="mix">The patches shifted and mixed</button>
+      </div>
+    </div>`,
+
+  symmetry: () => `
+    <div class="ctrl-row" role="group" aria-label="Symmetry">
+      <span class="readout">Apply a symmetry:</span>
+      <button class="chip" data-sym="time">Shift in time</button>
+      <button class="chip" data-sym="space">Shift in space</button>
+      <button class="chip" data-sym="rotate">Rotate the whole thing</button>
+      <button class="chip" data-sym="phase">Shift the field's phase</button>
+    </div>
+    <canvas class="play" width="900" height="300" data-canvas></canvas>
+    <div class="ctrl-row" style="margin-top:12px">
+      <span class="readout">Matched: <b data-pairs>0</b> / 4</span>
+      <span class="readout" data-symmsg>Pick one and watch which meter refuses to move.</span>
+    </div>`,
+
+  parity: () => `
+    <div class="dial-wrap">
+      <span class="readout">Crystal: <b data-kelvin>4.000</b> K</span>
+      <input class="pop-range" type="range" min="3" max="4000" value="4000" data-cool aria-label="Temperature in millikelvin">
+    </div>
+    <div class="ctrl-row">
+      <button class="chip" data-field aria-pressed="false">Magnetic field: off</button>
+      <button class="pop-btn sm red" data-count>Count the electrons</button>
+    </div>
+    <canvas class="play" width="900" height="320" data-canvas></canvas>
+    <div class="ctrl-row" style="margin-top:12px">
+      <span class="readout">Along spin: <b data-up>—</b></span>
+      <span class="readout">Against spin: <b data-down>—</b></span>
+    </div>`
 };
 
 /* ── 06 · du Châtelet — the crater test ──────────────────────────────── */
@@ -1115,12 +1185,421 @@ function initVault(card) {
   draw();
 }
 
+/* ── 01 · Leonardo — the aortic vortex ───────────────────────────────── */
+/* His actual apparatus: a wax cast of an ox aortic root, blown into glass,
+   with grass seeds suspended in the water so the flow could be watched. */
+
+function initVortex(card) {
+  const cv = $('[data-canvas]', card);
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  let rate = 20, running = false, t = 0, t0 = 0, closed = false;
+  const seeds = Array.from({ length: 150 }, () => ({
+    x: 40 + Math.random() * 420, y: 122 + Math.random() * 76, vx: 0, vy: 0, sw: 0
+  }));
+
+  function draw() {
+    ctx.fillStyle = '#fff9e6'; ctx.fillRect(0, 0, W, H);
+    // glass root: a tube that bulges into three sinuses
+    ctx.strokeStyle = '#111'; ctx.lineWidth = 6;
+    ctx.beginPath();
+    ctx.moveTo(20, 110); ctx.lineTo(300, 110);
+    ctx.bezierCurveTo(360, 60, 470, 60, 520, 110);
+    ctx.lineTo(880, 110);
+    ctx.moveTo(20, 210); ctx.lineTo(300, 210);
+    ctx.bezierCurveTo(360, 260, 470, 260, 520, 210);
+    ctx.lineTo(880, 210);
+    ctx.stroke();
+
+    // the cusps
+    const open = closed ? 4 : 34;
+    ctx.strokeStyle = '#e6242a'; ctx.lineWidth = 8; ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(560, 112); ctx.lineTo(600, 160 - open);
+    ctx.moveTo(560, 208); ctx.lineTo(600, 160 + open);
+    ctx.stroke();
+    ctx.lineCap = 'butt';
+
+    // seeds
+    ctx.fillStyle = '#0b63d6';
+    seeds.forEach((s) => { ctx.beginPath(); ctx.arc(s.x, s.y, 3.2, 0, 7); ctx.fill(); });
+
+    ctx.fillStyle = '#111';
+    ctx.font = 'bold 13px "Space Mono", monospace'; ctx.textAlign = 'center';
+    ctx.fillText('SINUSES OF VALSALVA', 410, 46);
+    ctx.fillText('CUSPS', 580, 250);
+  }
+
+  function step() {
+    if (!running) return;
+    t = (performance.now() - t0) / 1000;
+    const push = rate / 100 * 4.2;
+    const inBand = rate >= 52 && rate <= 78;
+    seeds.forEach((s) => {
+      const inSinus = s.x > 300 && s.x < 520;
+      if (inSinus && inBand) {
+        // In the bulges the flow rolls back on itself. The eddy has to actually
+        // hold the seeds, so it circulates them about the sinus centre with a
+        // weak spring to a radius rather than flushing them downstream.
+        const cx = 410, cy = 160;
+        const dx = s.x - cx, dy = s.y - cy;
+        const r = Math.hypot(dx, dy) || 0.001;
+        const pull = (42 - r) * 0.010;
+        s.vx += (-dy / r) * 1.15 + (dx / r) * pull + push * 0.05;
+        s.vy += (dx / r) * 1.15 + (dy / r) * pull;
+        s.sw = 1;
+      } else {
+        s.vx += (push - s.vx) * 0.15;
+        s.vy += (160 - s.y) * 0.004;
+        s.sw = 0;
+      }
+      s.vx *= 0.90; s.vy *= 0.90;
+      s.x += s.vx; s.y += s.vy;
+      // the glass keeps them in; only the far end recycles
+      if (s.y < 114) { s.y = 114; s.vy = Math.abs(s.vy) * 0.4; }
+      if (s.y > 206) { s.y = 206; s.vy = -Math.abs(s.vy) * 0.4; }
+      if (s.x > 880) { s.x = 30; s.y = 130 + Math.random() * 60; s.vx = s.vy = 0; }
+    });
+    const swirling = seeds.filter((s) => s.sw).length;
+    closed = swirling > 20;
+    $('[data-valve]', card).textContent = closed ? 'shut by the eddies' : 'open';
+    draw();
+    if (closed && t > 1.8) {
+      running = false;
+      sfx.select();
+      setTimeout(() => unlock(card), 400);
+      return;
+    }
+    requestAnimationFrame(step);
+  }
+
+  $('[data-flow]', card).addEventListener('input', (e) => {
+    rate = Number(e.target.value);
+    $('[data-rate]', card).textContent = rate;
+  });
+  $('[data-pump]', card).addEventListener('click', () => {
+    if (running) return;
+    t = 0; t0 = performance.now(); running = true; step();
+    setTimeout(() => {
+      if (running) {
+        running = false;
+        boom($('[data-stage]', card), 'NO EDDY');
+        $('[data-valve]', card).textContent = 'still open';
+      }
+    }, 5200);
+  });
+  draw();
+}
+
+/* ── 02 · Feynman — the O-ring ───────────────────────────────────────── */
+/* Rogers Commission, 11 February 1986: a C-clamp, a glass of ice water and
+   a sample of Morton Thiokol's O-ring rubber, on live television. */
+
+function initOring(card) {
+  const cv = $('[data-canvas]', card);
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  let temp = 20, squeeze = 0, phase = 'idle', rebound = 1;
+
+  function draw() {
+    ctx.fillStyle = '#fff9e6'; ctx.fillRect(0, 0, W, H);
+    // glass of water
+    ctx.strokeStyle = '#111'; ctx.lineWidth = 6;
+    ctx.strokeRect(300, 70, 300, 190);
+    ctx.fillStyle = temp <= 4 ? '#8fd4ff' : '#bfe4ff';
+    ctx.fillRect(303, 100, 294, 157);
+    ctx.fillStyle = 'rgba(255,255,255,.5)';
+    for (let y = 106; y < 256; y += 10) for (let x = 308; x < 596; x += 10) {
+      ctx.beginPath(); ctx.arc(x, y, 1.5, 0, 7); ctx.fill();
+    }
+    if (temp <= 4) {
+      ctx.fillStyle = '#fff';
+      for (let i = 0; i < 5; i++) {
+        ctx.fillRect(320 + i * 55, 104 + (i % 2) * 12, 26, 18);
+        ctx.strokeStyle = '#111'; ctx.lineWidth = 3;
+        ctx.strokeRect(320 + i * 55, 104 + (i % 2) * 12, 26, 18);
+      }
+    }
+    // the ring, squashed by the clamp
+    const ry = 60 - squeeze * 44;
+    ctx.strokeStyle = '#111'; ctx.lineWidth = 12;
+    ctx.beginPath(); ctx.ellipse(450, 180, 74, Math.max(6, ry), 0, 0, 7); ctx.stroke();
+    // clamp jaws
+    ctx.fillStyle = '#e6242a';
+    ctx.fillRect(370, 180 - ry - 26, 160, 16);
+    ctx.fillRect(370, 180 + ry + 10, 160, 16);
+    ctx.strokeStyle = '#111'; ctx.lineWidth = 4;
+    ctx.strokeRect(370, 180 - ry - 26, 160, 16);
+    ctx.strokeRect(370, 180 + ry + 10, 160, 16);
+
+    ctx.fillStyle = '#111';
+    ctx.font = 'bold 14px "Space Mono", monospace'; ctx.textAlign = 'center';
+    ctx.fillText(`${temp} °C`, 450, 288);
+  }
+
+  function run() {
+    if (phase !== 'idle') return;
+    phase = 'squeeze';
+    // Below about 0 °C the rubber loses resilience and does not spring back.
+    rebound = temp <= 0 ? 0.12 : temp <= 8 ? 0.55 : 1;
+    const t0 = performance.now();
+    const tick = () => {
+      const dt = performance.now() - t0;
+      if (dt < 900) squeeze = dt / 900;
+      else if (dt < 1700) squeeze = 1;
+      else if (dt < 2700) squeeze = 1 - ((dt - 1700) / 1000) * rebound;
+      else {
+        squeeze = 1 - rebound;
+        phase = 'idle';
+        const ok = rebound < 0.3;
+        $('[data-seal]', card).textContent = ok
+          ? 'did not spring back — no seal'
+          : rebound < 1 ? 'sluggish' : 'springs back, seals fine';
+        draw();
+        if (ok) { sfx.select(); setTimeout(() => unlock(card), 500); }
+        else sfx.deny();
+        return;
+      }
+      draw();
+      requestAnimationFrame(tick);
+    };
+    tick();
+  }
+
+  $('[data-water]', card).addEventListener('input', (e) => {
+    temp = Number(e.target.value);
+    $('[data-temp]', card).textContent = `${temp} °C`;
+    squeeze = 0; draw();
+  });
+  $('[data-clamp]', card).addEventListener('click', run);
+  draw();
+}
+
+/* ── 03 · Ibn al-Haytham — the dark room ─────────────────────────────── */
+/* Several lamps outside a darkened chamber with one aperture. Each casts its
+   own separate inverted patch; block one and only that patch goes out. */
+
+function initCamera(card) {
+  const cv = $('[data-canvas]', card);
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  const on = [true, true, true];
+  const COL = ['#e6242a', '#ffd400', '#0b63d6'];
+  let asked = false;
+
+  function draw() {
+    ctx.fillStyle = '#fff9e6'; ctx.fillRect(0, 0, W, H);
+    // the chamber
+    ctx.fillStyle = '#141414'; ctx.fillRect(430, 20, 450, 290);
+    ctx.strokeStyle = '#111'; ctx.lineWidth = 6;
+    ctx.strokeRect(430, 20, 450, 290);
+    // aperture
+    ctx.fillStyle = '#fff9e6'; ctx.fillRect(424, 158, 14, 16);
+
+    on.forEach((lit, i) => {
+      const ly = 70 + i * 90;
+      ctx.fillStyle = lit ? COL[i] : '#cfc7b4';
+      ctx.beginPath(); ctx.arc(150, ly, 26, 0, 7); ctx.fill();
+      ctx.strokeStyle = '#111'; ctx.lineWidth = 5; ctx.stroke();
+      ctx.fillStyle = '#111'; ctx.font = 'bold 12px "Space Mono", monospace';
+      ctx.textAlign = 'center'; ctx.fillText(`LAMP ${i + 1}`, 150, ly + 46);
+      if (!lit) return;
+      // straight ray through the hole, inverted on the far wall
+      const wy = 165 + (165 - ly) * 2.2;
+      ctx.strokeStyle = COL[i]; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(176, ly); ctx.lineTo(430, 166); ctx.lineTo(872, wy); ctx.stroke();
+      ctx.fillStyle = COL[i];
+      ctx.beginPath(); ctx.ellipse(866, wy, 10, 26, 0, 0, 7); ctx.fill();
+      ctx.strokeStyle = '#fff9e6'; ctx.lineWidth = 3; ctx.stroke();
+    });
+
+    ctx.fillStyle = '#fff9e6'; ctx.font = 'bold 12px "Space Mono", monospace';
+    ctx.textAlign = 'right'; ctx.fillText('FAR WALL', 866, 300);
+    ctx.textAlign = 'left'; ctx.fillText('al-bayt al-muẓlim', 446, 300);
+  }
+
+  $$('.chip[data-lamp]', card).forEach((c) => c.addEventListener('click', () => {
+    const i = Number(c.dataset.lamp);
+    on[i] = !on[i];
+    c.setAttribute('aria-pressed', String(on[i]));
+    c.textContent = `Lamp ${i + 1}${on[i] ? '' : ' (out)'}`;
+    sfx.hover();
+    draw();
+    // The proof only lands once all three are lit and one is then put out.
+    if (!asked && on.filter(Boolean).length === 2) {
+      asked = true;
+      $('[data-q3]', card).hidden = false;
+      sfx.select();
+    }
+  }));
+
+  $$('[data-q3] .chip', card).forEach((b) => b.addEventListener('click', () => {
+    if (b.dataset.a3 === 'one') { b.classList.add('done'); unlock(card); }
+    else boom($('[data-stage]', card), 'NO!');
+  }));
+
+  draw();
+}
+
+/* ── 04 · Noether — the symmetry bench ───────────────────────────────── */
+/* Her first theorem, made operable: apply a continuous symmetry and watch
+   exactly one quantity refuse to drift. */
+
+const SYMS = {
+  time:   { label: 'Shift in time',      keeps: 'energy',   name: 'Energy' },
+  space:  { label: 'Shift in space',     keeps: 'momentum', name: 'Momentum' },
+  rotate: { label: 'Rotate everything',  keeps: 'angular',  name: 'Angular momentum' },
+  phase:  { label: 'Shift field phase',  keeps: 'charge',   name: 'Electric charge' }
+};
+const METERS = [
+  { key: 'energy', label: 'Energy' },
+  { key: 'momentum', label: 'Momentum' },
+  { key: 'angular', label: 'Angular momentum' },
+  { key: 'charge', label: 'Electric charge' }
+];
+
+function initSymmetry(card) {
+  const cv = $('[data-canvas]', card);
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  let active = null, t = 0;
+  const found = new Set();
+
+  function draw() {
+    ctx.fillStyle = '#fff9e6'; ctx.fillRect(0, 0, W, H);
+    METERS.forEach((m, i) => {
+      const y = 40 + i * 66;
+      const held = active && SYMS[active].keeps === m.key;
+      ctx.fillStyle = '#111'; ctx.font = 'bold 13px "Space Mono", monospace';
+      ctx.textAlign = 'left'; ctx.fillText(m.label.toUpperCase(), 24, y + 20);
+      ctx.fillStyle = '#fff'; ctx.fillRect(300, y, 560, 34);
+      ctx.strokeStyle = '#111'; ctx.lineWidth = 5; ctx.strokeRect(300, y, 560, 34);
+      // a held quantity is a flat line; everything else wanders
+      const wob = held ? 0 : Math.sin(t * (1.3 + i * 0.5) + i) * 210;
+      ctx.fillStyle = held ? '#0b63d6' : '#e6242a';
+      ctx.fillRect(575 + wob - 8, y + 3, 16, 28);
+      if (held) {
+        ctx.fillStyle = '#0b63d6'; ctx.font = 'bold 12px "Space Mono", monospace';
+        ctx.textAlign = 'right'; ctx.fillText('CONSERVED', 852, y - 4);
+      }
+    });
+    ctx.fillStyle = '#6b6459'; ctx.font = 'bold 11px "Space Mono", monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText(active ? SYMS[active].label.toUpperCase() + ' APPLIED' : 'NO SYMMETRY APPLIED', W / 2, 300);
+  }
+
+  function loop() { t += 0.05; draw(); requestAnimationFrame(loop); }
+
+  $$('.chip[data-sym]', card).forEach((c) => c.addEventListener('click', () => {
+    active = c.dataset.sym;
+    $$('.chip[data-sym]', card).forEach((o) => o.setAttribute('aria-pressed', String(o === c)));
+    sfx.move();
+    if (!found.has(active)) {
+      found.add(active);
+      $('[data-pairs]', card).textContent = String(found.size);
+      $('[data-symmsg]', card).textContent = `${SYMS[active].label} ⇒ ${SYMS[active].name} holds still.`;
+    }
+    if (found.size === 4) {
+      $('[data-symmsg]', card).textContent = 'Four symmetries, four conservation laws. That is the theorem.';
+      sfx.select();
+      setTimeout(() => unlock(card), 600);
+    }
+  }));
+
+  loop();
+}
+
+/* ── 05 · Wu — the cobalt mirror ─────────────────────────────────────── */
+/* Co-60 cooled to about 0.003 K by adiabatic demagnetisation, spins aligned
+   in a field, beta electrons counted along the spin and against it. */
+
+function initParity(card) {
+  const cv = $('[data-canvas]', card);
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  let mK = 4000, field = false, counted = false, up = 0, down = 0;
+
+  const aligned = () => field && mK <= 10;
+
+  function draw() {
+    ctx.fillStyle = aligned() ? '#eaf4ff' : '#fff9e6'; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = 'rgba(17,17,17,.10)';
+    for (let y = 6; y < H; y += 11) for (let x = 6; x < W; x += 11) {
+      ctx.beginPath(); ctx.arc(x, y, 1.5, 0, 7); ctx.fill();
+    }
+    // cryostat
+    ctx.strokeStyle = '#111'; ctx.lineWidth = 6;
+    ctx.strokeRect(60, 30, 780, 240);
+    ctx.fillStyle = '#111'; ctx.font = 'bold 12px "Space Mono", monospace';
+    ctx.textAlign = 'left'; ctx.fillText('CERIUM MAGNESIUM NITRATE · ADIABATIC DEMAGNETISATION', 74, 22);
+
+    // nuclei with spin arrows
+    for (let i = 0; i < 24; i++) {
+      const x = 120 + (i % 8) * 92, y = 90 + Math.floor(i / 8) * 68;
+      const a = aligned() ? -Math.PI / 2 : (i * 2.399) % (Math.PI * 2);
+      ctx.fillStyle = '#e6242a';
+      ctx.beginPath(); ctx.arc(x, y, 13, 0, 7); ctx.fill();
+      ctx.strokeStyle = '#111'; ctx.lineWidth = 4; ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(x, y); ctx.lineTo(x + Math.cos(a) * 30, y + Math.sin(a) * 30);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(x + Math.cos(a) * 30, y + Math.sin(a) * 30);
+      ctx.lineTo(x + Math.cos(a + 2.6) * 12 + Math.cos(a) * 20, y + Math.sin(a + 2.6) * 12 + Math.sin(a) * 20);
+      ctx.lineTo(x + Math.cos(a - 2.6) * 12 + Math.cos(a) * 20, y + Math.sin(a - 2.6) * 12 + Math.sin(a) * 20);
+      ctx.closePath(); ctx.fillStyle = '#111'; ctx.fill();
+    }
+
+    if (counted) {
+      ctx.fillStyle = '#0b63d6'; ctx.fillRect(60, 282, (up / (up + down)) * 780, 22);
+      ctx.fillStyle = '#e6242a'; ctx.fillRect(60 + (up / (up + down)) * 780, 282, (down / (up + down)) * 780, 22);
+      ctx.strokeStyle = '#111'; ctx.lineWidth = 5; ctx.strokeRect(60, 282, 780, 22);
+    }
+  }
+
+  $('[data-cool]', card).addEventListener('input', (e) => {
+    mK = Number(e.target.value);
+    $('[data-kelvin]', card).textContent = (mK / 1000).toFixed(3);
+    counted = false; draw();
+  });
+  $('[data-field]', card).addEventListener('click', (e) => {
+    field = !field;
+    e.currentTarget.setAttribute('aria-pressed', String(field));
+    e.currentTarget.textContent = `Magnetic field: ${field ? 'on' : 'off'}`;
+    counted = false; sfx.hover(); draw();
+  });
+
+  $('[data-count]', card).addEventListener('click', () => {
+    counted = true;
+    if (aligned()) {
+      // Electrons come out preferentially AGAINST the nuclear spin.
+      up = 34; down = 66;
+      $('[data-up]', card).textContent = '34%';
+      $('[data-down]', card).textContent = '66% — asymmetric';
+      draw();
+      sfx.select();
+      setTimeout(() => unlock(card), 500);
+    } else {
+      up = 50; down = 50;
+      $('[data-up]', card).textContent = '50%';
+      $('[data-down]', card).textContent = '50% — no asymmetry';
+      draw();
+      sfx.deny();
+      if (mK > 10) boom($('[data-stage]', card), 'TOO WARM');
+    }
+  });
+
+  draw();
+}
+
 /* ── mounting ────────────────────────────────────────────────────────── */
 
 const INIT = {
   crater: initCrater, hop: initHop, mix: initMix, pump: initPump, extract: initExtract,
   cepheid: initCepheid, filament: initFilament, centrifuge: initCentrifuge,
-  solar: initSolar, vault: initVault
+  solar: initSolar, vault: initVault,
+  vortex: initVortex, oring: initOring, camera: initCamera,
+  symmetry: initSymmetry, parity: initParity
 };
 
 export const hasRun = (id) => done.has(id);

@@ -226,7 +226,9 @@ export class Sheet {
       ${sci.game ? `
       <section class="panel">
         <h2 class="sec-title"><span>The Experiment</span></h2>
-        <p class="sec-sub">This one is sealed until you have run it yourself.</p>
+        <p class="sec-sub">${sci.beats
+          ? 'The story below is sealed until you have run this yourself.'
+          : 'Their own apparatus, rebuilt. The quest log below has its own unlock chain, so this one is a bench rather than a lock — but it counts toward the codex.'}</p>
         <div data-exp></div>
       </section>` : ''}
 

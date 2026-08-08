@@ -44,9 +44,9 @@ const ERAS = {
 const fromWingI = (s) => ({
   ...s,
   wing: 1,
-  quests: s.quests,
-  artifacts: s.artifacts,
-  game: null, beats: null, today: null
+  /* Wing I has no story beats — its narrative lives in the quest tree — but it
+     does now carry an experiment, so the gate applies to the quest log instead. */
+  beats: null, today: null
 });
 
 const fromWingII = (s) => ({
