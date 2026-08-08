@@ -1,8 +1,9 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><title>Rig sheet</title>
+<link rel="icon" href="data:,">
 <link rel="stylesheet" href="css/style.css">
 <style>
-  body { overflow: auto; padding: 24px; background: #061117; }
+  body { overflow: auto; padding: 24px; background: #fff9e6; }
   .row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; max-width: 1600px; margin: 0 auto; }
   .cell { border: 1px solid rgba(154,214,224,.2); border-radius: 4px; overflow: hidden; }
   .cell h3 { font: 600 .68rem/1 var(--mono); letter-spacing: .18em; text-transform: uppercase;
@@ -11,10 +12,10 @@
 <body>
 <div class="row" id="row"></div>
 <script type="module">
-  import { SCIENTISTS } from './js/data.js';
-  import { buildPortrait, trackPointer } from './js/portrait.js';
-  document.getElementById('row').innerHTML = SCIENTISTS.map((s) =>
-    `<div class="cell">${buildPortrait(s.id, s.accent)}<h3>${s.shortName}</h3></div>`).join('');
+  import { RIGS, buildPortrait, trackPointer } from './js/portrait.js';
+  const INK = ['#e6242a', '#0b63d6', '#ffd400'];
+  document.getElementById('row').innerHTML = Object.keys(RIGS).map((id, i) =>
+    `<div class="cell">${buildPortrait(id, INK[i % 3])}<h3>${id}</h3></div>`).join('');
   trackPointer(document);
 </script>
 </body></html>

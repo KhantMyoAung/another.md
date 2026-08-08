@@ -2,8 +2,10 @@
  * CODEX OF MINDS — screens, character sheets and the quest tree.
  */
 
-import { SCIENTISTS, STAT_AXES, QUEST_KINDS, byId } from './data.js';
+import { STAT_AXES, QUEST_KINDS } from './data.js';
+import { ROSTER, byId, numberOf } from './roster.js';
 import { buildPortrait } from './portrait.js';
+import { mountExperiment, hasRun } from './games.js';
 import { sfx } from './audio.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
@@ -33,8 +35,11 @@ const LEVEL_STEP = 600;
 const levelFor = (xp) => Math.min(9, Math.floor(xp / LEVEL_STEP) + 1);
 
 export function totalCompletion() {
-  const done = SCIENTISTS.reduce((n, s) => n + unlockedSet(s.id).size, 0);
-  const all = SCIENTISTS.reduce((n, s) => n + s.quests.length, 0);
+  const withQuests = ROSTER.filter((s) => s.quests);
+  const done = withQuests.reduce((n, s) => n + unlockedSet(s.id).size, 0)
+    + ROSTER.filter((s) => s.game && hasRun(s.id)).length;
+  const all = withQuests.reduce((n, s) => n + s.quests.length, 0)
+    + ROSTER.filter((s) => s.game).length;
   return { done, all, pct: Math.round((done / all) * 100) };
 }
 
@@ -146,6 +151,21 @@ export class Sheet {
       this.animateIn();
     });
     this.bind();
+    this.mountExp(sci);
+  }
+
+  /** Wing II screens carry an apparatus; the story stays sealed until it runs. */
+  mountExp(sci) {
+    const host = $('[data-exp]', this.el);
+    if (!host || !sci.game) return;
+    const reveal = () => {
+      const beats = $('[data-beats]', this.el);
+      const lock = $('[data-locked]', this.el);
+      if (beats) beats.classList.add('shown');
+      if (lock) lock.remove();
+    };
+    const already = mountExperiment(host, sci, reveal);
+    if (already) reveal();
   }
 
   close() {
@@ -154,11 +174,12 @@ export class Sheet {
   }
 
   render(sci) {
-    const xp = xpFor(sci);
+    const hasQuests = !!(sci.quests && sci.quests.length);
+    const xp = hasQuests ? xpFor(sci) : 0;
     const lvl = levelFor(xp);
     const u = unlockedSet(sci.id);
-    const pct = Math.round((u.size / sci.quests.length) * 100);
-    const idx = SCIENTISTS.indexOf(sci) + 1;
+    const pct = hasQuests ? Math.round((u.size / sci.quests.length) * 100) : 0;
+    const no = numberOf(sci);
 
     return `
     <div class="sheet-inner">
@@ -171,7 +192,7 @@ export class Sheet {
           <div class="art-frame">${buildPortrait(sci.id, sci.accent)}</div>
           <div class="art-plaque">
             <span class="rarity ${sci.rarity}">${sci.rarity === 'underrated' ? 'Underrated' : 'Legendary'}</span>
-            <span class="no">№ ${String(idx).padStart(2, '0')}</span>
+            <span class="no">№ ${no}</span>
           </div>
         </div>
 
@@ -182,10 +203,11 @@ export class Sheet {
           <dl class="vitals">
             <div><dt>Lifespan</dt><dd>${sci.life}</dd></div>
             <div><dt>Origin</dt><dd>${sci.origin}</dd></div>
-            <div><dt>Quests</dt><dd>${sci.quests.length} logged</dd></div>
+            ${hasQuests ? `<div><dt>Quests</dt><dd>${sci.quests.length} logged</dd></div>` : ''}
           </dl>
           <p class="tagline">${sci.tagline}</p>
 
+          ${hasQuests ? `
           <div class="xp">
             <div class="xp-top">
               <span class="lvl">Lv ${lvl}</span>
@@ -194,53 +216,70 @@ export class Sheet {
             </div>
             <div class="xp-bar"><i data-bar style="--v:${pct}%"></i></div>
           </div>
-
           <div class="hero-actions">
             <button class="btn ghost" data-act="revealall">Reveal every entry</button>
             <button class="btn ghost" data-act="reset">Reset progress</button>
-          </div>
+          </div>` : ''}
         </div>
       </header>
 
+      ${sci.game ? `
+      <section class="panel">
+        <h2 class="sec-title"><span>The Experiment</span></h2>
+        <p class="sec-sub">${sci.beats
+          ? 'The story below is sealed until you have run this yourself.'
+          : 'Their own apparatus, rebuilt. The quest log below has its own unlock chain, so this one is a bench rather than a lock — but it counts toward the codex.'}</p>
+        <div data-exp></div>
+      </section>` : ''}
+
+      ${sci.beats ? `
+      <section class="panel">
+        <div class="beats" data-beats>
+          ${sci.beats.map((b, j) => `
+            <div class="beat" style="--bd:${j * 160}ms"><h4>${b.head}</h4><p>${b.body}</p></div>`).join('')}
+          <div class="today">
+            <h4>So what does that have to do with you?</h4>
+            <p>${sci.today}</p>
+          </div>
+        </div>
+        <p class="locked-note" data-locked>▓▒░ SEALED — RUN THE EXPERIMENT ░▒▓</p>
+      </section>` : `
       <section class="panel intro-panel">
         <p class="intro">${sci.intro}</p>
-        ${sci.underrated ? `
-          <aside class="underrated">
-            <h3>Why this one is underrated</h3>
-            <p>${sci.underrated}</p>
-          </aside>` : ''}
-        <blockquote class="quote">
-          <p>“${sci.quote.text}”</p>
-          <cite>${sci.quote.source}</cite>
-        </blockquote>
-      </section>
+        ${sci.underrated ? `<aside class="underrated"><h3>Why this one is underrated</h3><p>${sci.underrated}</p></aside>` : ''}
+        ${sci.quote ? `<blockquote class="quote"><p>“${sci.quote.text}”</p><cite>${sci.quote.source}</cite></blockquote>` : ''}
+      </section>`}
 
+      ${sci.stats ? `
       <section class="panel">
         <h2 class="sec-title"><span>Attribute Profile</span></h2>
         <div class="stats-wrap">${radar(sci)}</div>
-      </section>
+      </section>` : ''}
 
+      ${hasQuests ? `
       <section class="panel">
         <h2 class="sec-title"><span>Quest Log</span></h2>
         <p class="sec-sub">Every node is a documented contribution. Study one to unlock what it led to.</p>
         ${questTree(sci)}
-      </section>
+      </section>` : ''}
 
+      ${sci.artifacts ? `
       <section class="panel">
         <h2 class="sec-title"><span>Artifacts</span></h2>
         <div class="artifacts">
           ${sci.artifacts.map((a) => `
-            <div class="artifact">
-              <h4>${a.name}</h4><p class="a-year">${a.year}</p><p>${a.what}</p>
-            </div>`).join('')}
+            <div class="artifact"><h4>${a.name}</h4><p class="a-year">${a.year}</p><p>${a.what}</p></div>`).join('')}
         </div>
-      </section>
+      </section>` : ''}
 
       <section class="panel sources">
         <h2 class="sec-title"><span>Sources</span></h2>
         <p class="sec-sub">What the entries above were built from. Go and check them.</p>
         <ul>
-          ${sci.sources.map((s) => `<li><a href="${s.url}" target="_blank" rel="noopener noreferrer">${s.title}</a></li>`).join('')}
+          ${sci.sources.map((x) => {
+            const t = x.t || x.title, u2 = x.u || x.url;
+            return `<li><a href="${u2}" target="_blank" rel="noopener noreferrer">${t}</a></li>`;
+          }).join('')}
         </ul>
       </section>
 
@@ -435,32 +474,37 @@ export class Sheet {
 export class HallUI {
   constructor(el) {
     this.el = el;
+    this.no = $('[data-no]', el);
     this.name = $('[data-name]', el);
     this.title = $('[data-title]', el);
     this.life = $('[data-life]', el);
-    this.tag = $('[data-tag]', el);
     this.rar = $('[data-rar]', el);
     this.dots = $('[data-dots]', el);
-    this.dots.innerHTML = SCIENTISTS.map((s, i) =>
-      `<button class="dot" data-i="${i}" aria-label="${s.name}"><span></span></button>`).join('');
+    this.dots.innerHTML = ROSTER.map((s2, i) =>
+      `<button class="dot" data-i="${i}" title="${s2.name}" aria-label="${s2.name}"><span></span></button>`).join('');
+    this.bar = $('.railbar', el);
+    this.last = -1;
   }
 
   set(i) {
-    const s = SCIENTISTS[i];
-    this.el.style.setProperty('--accent', s.accent);
-    this.el.style.setProperty('--accent2', s.accent2);
-    this.name.textContent = s.name;
-    this.title.textContent = `“${s.title}”`;
-    this.life.textContent = `${s.life} · ${s.origin}`;
-    this.tag.textContent = s.tagline;
-    this.rar.textContent = s.rarity === 'underrated' ? 'Underrated' : 'Legendary';
-    this.rar.className = `rarity ${s.rarity}`;
+    if (i === this.last) return;
+    this.last = i;
+    const s2 = ROSTER[i];
+    this.el.style.setProperty('--accent', s2.accent);
+    this.el.style.setProperty('--accent2', s2.accent2);
+    this.no.textContent = numberOf(s2);
+    this.name.textContent = s2.name;
+    this.title.textContent = `“${s2.title}”`;
+    this.life.textContent = s2.life;
+    this.rar.textContent = s2.rarity === 'underrated' ? 'Underrated' : 'Legendary';
+    this.rar.className = `rarity ${s2.rarity}`;
     $$('.dot', this.dots).forEach((d, j) => d.classList.toggle('on', j === i));
-    const card = $('.nameplate', this.el);
-    card.classList.remove('flip');
-    void card.offsetWidth;
-    card.classList.add('flip');
+    const on = $('.dot.on', this.dots);
+    if (on) on.scrollIntoView({ block: 'nearest', inline: 'center' });
+    this.bar.classList.remove('flip');
+    void this.bar.offsetWidth;
+    this.bar.classList.add('flip');
   }
 }
 
-export { $, $$, byId };
+export { $, $$, byId, ROSTER };

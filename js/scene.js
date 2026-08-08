@@ -11,11 +11,11 @@ import { EffectComposer } from '../vendor/three/addons/postprocessing/EffectComp
 import { RenderPass } from '../vendor/three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from '../vendor/three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from '../vendor/three/addons/postprocessing/OutputPass.js';
-import { SCIENTISTS } from './data.js';
+import { ROSTER } from './roster.js';
 import { portraitDataURI } from './portrait.js';
 
-const RING_R = 9.2;
-const STEP = (Math.PI * 2) / SCIENTISTS.length;
+const RING_R = 15.4;
+const STEP = (Math.PI * 2) / ROSTER.length;
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* ── shaders ─────────────────────────────────────────────────────────── */
@@ -33,67 +33,38 @@ const FLOOR_FRAG = `
   uniform float uTime;
   uniform float uPulse;
   uniform vec3 uAccent;
+  uniform vec3 uPaper;
 
   void main() {
     float d = length(vPos.xy);
-    float ang = atan(vPos.y, vPos.x);
+    float fade = smoothstep(44.0, 3.0, d);
 
-    // concentric rings drifting outward
-    float rings = abs(fract(d * 0.62 - uTime * 0.05) - 0.5);
-    rings = smoothstep(0.46, 0.5, rings);
+    // Ben-Day dot field, in world space so it stays a print screen and not a texture
+    vec2 g = fract(vPos.xy * 1.7) - 0.5;
+    float dots = 1.0 - smoothstep(0.15, 0.23, length(g));
 
-    // radial spokes, one per shrine plus subdivisions
-    float sp = abs(fract(ang * 20.0 / 6.28318 + 0.5) - 0.5);
-    float spokes = smoothstep(0.46, 0.5, sp);
+    // black concentric rings, drifting outward
+    float rings = smoothstep(0.47, 0.5, abs(fract(d * 0.42 - uTime * 0.035) - 0.5));
 
-    float grid = max(rings * 0.5, spokes * 0.22);
-    float fade = smoothstep(46.0, 4.0, d);
-    float inner = smoothstep(2.2, 5.0, d);
+    // selection shockwave
+    float wave = uPulse > 0.0 ? smoothstep(1.6, 0.0, abs(d - uPulse)) * (1.0 - uPulse / 40.0) : 0.0;
 
-    // expanding shockwave fired on selection
-    float wave = uPulse > 0.0 ? smoothstep(1.4, 0.0, abs(d - uPulse)) * (1.0 - uPulse / 40.0) : 0.0;
-
-    vec3 col = uAccent * (grid * fade * inner + wave * 1.6);
-    col += vec3(0.015, 0.045, 0.055) * fade;
-    float a = (grid * 0.85 * inner + wave) * fade + 0.05 * fade;
-    gl_FragColor = vec4(col, clamp(a, 0.0, 1.0));
+    vec3 col = mix(uPaper, uAccent, dots * 0.62);
+    col = mix(col, vec3(0.02), rings * 0.55);
+    col = mix(col, uAccent, wave);
+    gl_FragColor = vec4(col, clamp(fade, 0.0, 1.0));
   }`;
 
 const SKY_FRAG = `
   precision highp float;
   varying vec3 vDir;
-  uniform float uTime;
   uniform vec3 uAccent;
-
-  float hash(vec3 p) { return fract(sin(dot(p, vec3(127.1, 311.7, 74.7))) * 43758.5453); }
-  float noise(vec3 p) {
-    vec3 i = floor(p), f = fract(p);
-    f = f * f * (3.0 - 2.0 * f);
-    float n = mix(
-      mix(mix(hash(i), hash(i + vec3(1,0,0)), f.x), mix(hash(i + vec3(0,1,0)), hash(i + vec3(1,1,0)), f.x), f.y),
-      mix(mix(hash(i + vec3(0,0,1)), hash(i + vec3(1,0,1)), f.x), mix(hash(i + vec3(0,1,1)), hash(i + vec3(1,1,1)), f.x), f.y),
-      f.z);
-    return n;
-  }
-  float fbm(vec3 p) {
-    float v = 0.0, a = 0.5;
-    for (int i = 0; i < 5; i++) { v += a * noise(p); p *= 2.03; a *= 0.5; }
-    return v;
-  }
+  uniform vec3 uPaper;
 
   void main() {
     vec3 d = normalize(vDir);
-    float t = uTime * 0.012;
-    float n = fbm(d * 2.4 + vec3(t, t * 0.6, -t * 0.4));
-    float n2 = fbm(d * 5.5 - vec3(t * 0.7, 0.0, t));
-
-    vec3 deep = vec3(0.003, 0.010, 0.015);
-    vec3 mid  = vec3(0.008, 0.026, 0.034);
-    vec3 col = mix(deep, mid, smoothstep(0.35, 0.85, n));
-    col += uAccent * pow(smoothstep(0.62, 1.0, n * n2 * 2.2), 2.0) * 0.10;
-
-    // horizon lift so the floor does not meet a hard edge
-    col += vec3(0.006, 0.018, 0.022) * smoothstep(0.35, -0.15, d.y);
+    // flat newsprint ground with one soft ink wash toward the horizon
+    vec3 col = mix(uPaper, uAccent, smoothstep(0.45, -0.25, d.y) * 0.16);
     gl_FragColor = vec4(col, 1.0);
   }`;
 
@@ -120,7 +91,7 @@ const MOTE_VERT = `
     vec4 mv = modelViewMatrix * vec4(p, 1.0);
     gl_Position = projectionMatrix * mv;
     gl_PointSize = aSize * (44.0 / -mv.z) * (0.6 + uFocus * 0.7);
-    vAlpha = (0.10 + uFocus * 0.46) * (0.5 + 0.5 * sin(uTime * 1.6 + aSeed * 20.0));
+    vAlpha = (0.16 + uFocus * 0.62) * (0.55 + 0.45 * sin(uTime * 1.6 + aSeed * 20.0));
   }`;
 
 const MOTE_FRAG = `
@@ -154,7 +125,7 @@ const STAR_FRAG = `
     vec2 c = gl_PointCoord - 0.5;
     float d = length(c);
     if (d > 0.5) discard;
-    gl_FragColor = vec4(vec4(0.85, 0.94, 1.0, 1.0).rgb, pow(1.0 - d * 2.0, 3.0) * vA);
+    gl_FragColor = vec4(vec3(0.07), pow(1.0 - d * 2.0, 3.0) * vA * 0.5);
   }`;
 
 /* ── helpers ─────────────────────────────────────────────────────────── */
@@ -189,8 +160,7 @@ function makeMotes(color, count = 220) {
     fragmentShader: MOTE_FRAG,
     uniforms: { uTime: { value: 0 }, uFocus: { value: 0 }, uColor: { value: new THREE.Color(color) } },
     transparent: true,
-    depthWrite: false,
-    blending: THREE.AdditiveBlending
+    depthWrite: false
   });
   return new THREE.Points(g, m);
 }
@@ -210,9 +180,12 @@ export class Hall {
     this.pointer = new THREE.Vector2();
     this.parallax = new THREE.Vector2();
     this.pulse = -1;
+    this.fit = 1;
+    this.tall = false;
     this.shrines = [];
     this.onPick = () => {};
     this.onHover = () => {};
+    this.onFocusChange = () => {};
     this.hovered = -1;
     this.running = false;
 
@@ -228,19 +201,19 @@ export class Hall {
       canvas: this.canvas, antialias: true, alpha: false, powerPreference: 'high-performance'
     });
     this.renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.15;
+    this.renderer.toneMapping = THREE.NoToneMapping;   // flat inks, no filmic roll-off
+    this.renderer.toneMappingExposure = 1.0;
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
 
     this.scene = new THREE.Scene();
-    this.scene.fog = new THREE.FogExp2(0x08161c, 0.019);
+    this.scene.fog = new THREE.FogExp2(0xfff9e6, 0.012);
     this.camera = new THREE.PerspectiveCamera(46, 1, 0.1, 300);
 
     this.composer = new EffectComposer(this.renderer);
     this.composer.addPass(new RenderPass(this.scene, this.camera));
-    // Threshold matters more than strength here: a low one blooms the
-    // portraits themselves and the whole scene goes to milk.
-    this.bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.44, 0.52, 0.74);
+    // Comic art has no glow. Bloom is kept at a whisper only so the accent
+    // inks do not read as dead flat against the paper.
+    this.bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.10, 0.4, 0.86);
     this.composer.addPass(this.bloom);
     this.composer.addPass(new OutputPass());
   }
@@ -256,7 +229,11 @@ export class Hall {
     s.add(rim);
 
     /* sky */
-    this.skyU = { uTime: { value: 0 }, uAccent: { value: new THREE.Color(SCIENTISTS[0].accent) } };
+    this.skyU = {
+      uTime: { value: 0 },
+      uAccent: { value: new THREE.Color(ROSTER[0].accent) },
+      uPaper: { value: new THREE.Color(0xfff9e6) }
+    };
     s.add(new THREE.Mesh(
       new THREE.SphereGeometry(120, 40, 24),
       new THREE.ShaderMaterial({
@@ -280,13 +257,14 @@ export class Hall {
     this.starU = { uTime: { value: 0 } };
     s.add(new THREE.Points(sg, new THREE.ShaderMaterial({
       vertexShader: STAR_VERT, fragmentShader: STAR_FRAG, uniforms: this.starU,
-      transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false
+      transparent: true, depthWrite: false, fog: false
     })));
 
     /* floor */
     this.floorU = {
       uTime: { value: 0 }, uPulse: { value: -1 },
-      uAccent: { value: new THREE.Color(SCIENTISTS[0].accent) }
+      uAccent: { value: new THREE.Color(ROSTER[0].accent) },
+      uPaper: { value: new THREE.Color(0xfff9e6) }
     };
     const floor = new THREE.Mesh(
       new THREE.CircleGeometry(48, 96),
@@ -301,12 +279,12 @@ export class Hall {
 
     /* the core: a slowly tumbling icosahedron at the centre of the ring */
     this.core = new THREE.Group();
-    const coreMat = new THREE.MeshBasicMaterial({ color: 0x9fe8ff, wireframe: true, transparent: true, opacity: 0.34 });
+    const coreMat = new THREE.MeshBasicMaterial({ color: 0x111111, wireframe: true, transparent: true, opacity: 0.55 });
     this.coreMesh = new THREE.Mesh(new THREE.IcosahedronGeometry(1.5, 1), coreMat);
     this.core.add(this.coreMesh);
     const shell = new THREE.Mesh(
       new THREE.IcosahedronGeometry(2.35, 0),
-      new THREE.MeshBasicMaterial({ color: 0x4fd1c5, wireframe: true, transparent: true, opacity: 0.14 })
+      new THREE.MeshBasicMaterial({ color: 0xe6242a, wireframe: true, transparent: true, opacity: 0.4 })
     );
     this.coreShell = shell;
     this.core.add(shell);
@@ -318,7 +296,7 @@ export class Hall {
     s.add(this.ring);
 
     const loader = new THREE.TextureLoader();
-    SCIENTISTS.forEach((sci, i) => {
+    ROSTER.forEach((sci, i) => {
       const g = new THREE.Group();
       const a = i * STEP;
       g.position.set(Math.sin(a) * RING_R, 0, Math.cos(a) * RING_R);
@@ -329,13 +307,13 @@ export class Hall {
       /* pedestal */
       const ped = new THREE.Mesh(
         new THREE.CylinderGeometry(1.5, 1.9, 0.5, 8),
-        new THREE.MeshStandardMaterial({ color: 0x152b33, roughness: 0.72, metalness: 0.25 })
+        new THREE.MeshBasicMaterial({ color: accent })
       );
       ped.position.y = -2.15;
       g.add(ped);
       const pedRing = new THREE.Mesh(
-        new THREE.TorusGeometry(1.62, 0.045, 8, 48),
-        new THREE.MeshBasicMaterial({ color: accent })
+        new THREE.TorusGeometry(1.62, 0.075, 8, 48),
+        new THREE.MeshBasicMaterial({ color: 0x111111, fog: false })
       );
       pedRing.rotation.x = Math.PI / 2;
       pedRing.position.y = -1.87;
@@ -344,14 +322,14 @@ export class Hall {
       /* slab */
       const slab = new THREE.Mesh(
         new THREE.BoxGeometry(3.5, 4.7, 0.22),
-        new THREE.MeshStandardMaterial({ color: 0x0d2129, roughness: 0.55, metalness: 0.45 })
+        new THREE.MeshBasicMaterial({ color: 0xffffff })
       );
       slab.position.y = 0.55;
       g.add(slab);
 
       const edges = new THREE.LineSegments(
         new THREE.EdgesGeometry(slab.geometry),
-        new THREE.LineBasicMaterial({ color: accent, transparent: true, opacity: 0.85 })
+        new THREE.LineBasicMaterial({ color: 0x111111, fog: false })
       );
       edges.position.copy(slab.position);
       g.add(edges);
@@ -369,8 +347,8 @@ export class Hall {
 
       /* halo above the slab */
       const halo = new THREE.Mesh(
-        new THREE.TorusGeometry(1.05, 0.03, 8, 64),
-        new THREE.MeshBasicMaterial({ color: accent, transparent: true, opacity: 0.7 })
+        new THREE.TorusGeometry(1.05, 0.07, 8, 64),
+        new THREE.MeshBasicMaterial({ color: 0x111111, fog: false })
       );
       halo.rotation.x = Math.PI / 2;
       halo.position.y = 3.35;
@@ -473,8 +451,16 @@ export class Hall {
     const k = Math.round((this.targetAngle - desired) / (Math.PI * 2));
     this.targetAngle = desired + k * Math.PI * 2;
     this.focus = idx;
-    this.setAccent(SCIENTISTS[idx].accent);
+    this.setAccent(ROSTER[idx].accent);
+    this.onFocusChange(idx);
     return idx;
+  }
+
+  /** Follow the page theme — the 3D ground is the same paper as the CSS. */
+  setPaper(hex) {
+    this.floorU.uPaper.value.set(hex);
+    this.skyU.uPaper.value.set(hex);
+    if (this.scene.fog) this.scene.fog.color.set(hex);
   }
 
   setAccent(hex) {
@@ -498,6 +484,15 @@ export class Hall {
     this.bloom.setSize(w, h);
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
+    // A phone in portrait has a narrow horizontal field of view. Derive the
+    // pull-back from the geometry rather than guessing: work out the distance
+    // at which the slab plus a margin still spans the frame horizontally.
+    const halfV = THREE.MathUtils.degToRad(this.camera.fov) / 2;
+    const tanH = Math.tan(halfV) * this.camera.aspect;
+    const needed = 2.6 / Math.max(tanH, 0.001);          // half-width of a shrine + margin
+    const base = RING_R + 10.6;                          // the hall-mode distance
+    this.fit = Math.min(1.5, Math.max(1, needed / (base - RING_R)));
+    this.tall = this.camera.aspect < 0.72;
   }
 
   start() { this.running = true; this.clock.start(); this._loop(); }
@@ -518,10 +513,10 @@ export class Hall {
        pushes toward it as dolly → 0. The look-at point is deliberately below
        the slab so the portrait rides high in frame, clear of the nameplate. */
     const d = this.dolly;
-    const camZ = THREE.MathUtils.lerp(RING_R + 4.4, RING_R + 10.6, d);
+    const camZ = THREE.MathUtils.lerp(RING_R + 4.4, RING_R + 10.6, d) * (this.fit || 1);
     const camY = THREE.MathUtils.lerp(1.4, 3.7, d);
     const lookZ = THREE.MathUtils.lerp(RING_R, RING_R - 4.6, d);
-    const lookY = THREE.MathUtils.lerp(0.3, -0.9, d);
+    const lookY = THREE.MathUtils.lerp(0.3, this.tall ? -1.1 : -0.9, d);
     const px = this.parallax.x * (0.5 + d * 1.2);
     const py = this.parallax.y * (0.25 + d * 0.6);
     const bobY = reduced ? 0 : Math.sin(t * 0.32) * 0.2 * d;
@@ -534,7 +529,7 @@ export class Hall {
       sh.focusT += (want - sh.focusT) * Math.min(1, dt * 4.5);
       const f = sh.focusT;
 
-      sh.art.material.color.setScalar(THREE.MathUtils.lerp(0.55, 1, f));
+      sh.art.material.color.setScalar(THREE.MathUtils.lerp(0.78, 1, f));
       sh.edges.material.opacity = 0.24 + f * 0.7;
       sh.halo.material.opacity = 0.16 + f * 0.66;
       sh.motes.material.uniforms.uFocus.value = f;
